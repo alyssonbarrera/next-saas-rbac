@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AbilityBuilder } from '@casl/ability'
 
 import type { AppAbility } from './index'
@@ -17,5 +16,6 @@ export const permissions: Record<Role, PermissionsByRole> = {
   },
   MEMBER: (_user, { can }) => {
     can('invite', 'User')
+    can('manage', 'Project')
   },
 }
