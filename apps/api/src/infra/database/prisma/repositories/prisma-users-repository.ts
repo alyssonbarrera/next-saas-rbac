@@ -12,6 +12,23 @@ export class PrismaUsersRepository implements UsersRepository {
     return user
   }
 
+  async saveWithOrganization(data: CreateUserDTO, organizationId: string) {
+    const user = await prisma.user.create({
+      data: {
+        ...data,
+        member_on: organizationId
+          ? {
+              create: {
+                organizationId,
+              },
+            }
+          : undefined,
+      },
+    })
+
+    return user
+  }
+
   async findByEmail(email: string) {
     const user = await prisma.user.findUnique({
       where: {

@@ -2,6 +2,7 @@ import type { User } from '@prisma/client'
 import { hash } from 'bcryptjs'
 
 import { AppError } from '@/core/errors/app-error'
+import { OrganizationsRepository } from '@/modules/organizations/repositories/organizations-repository'
 import type { UsersRepository } from '@/modules/users/repositories/users-repository'
 
 import type { AccountsRepository } from '../repositories/accounts-repository'
@@ -20,6 +21,7 @@ export class CreateAccountUseCase {
   constructor(
     private accountsRepository: AccountsRepository,
     private usersRepository: UsersRepository,
+    private organizationsRepository: OrganizationsRepository,
   ) {}
 
   async execute({
@@ -33,13 +35,26 @@ export class CreateAccountUseCase {
       throw new AppError('User already exists', 409)
     }
 
+    const [, domain] = email.split('@')
+
+    const autoJoinOrganization =
+      await this.organizationsRepository.findByDomainAndShouldAttachUsersByDomain(
+        {
+          domain,
+          shouldAttachUsersByDomain: true,
+        },
+      )
+
     const hashedPassword = await hash(password, 14)
 
-    const user = await this.usersRepository.save({
-      name,
-      email,
-      passwordHash: hashedPassword,
-    })
+    const user = await this.usersRepository.saveWithOrganization(
+      {
+        name,
+        email,
+        passwordHash: hashedPassword,
+      },
+      autoJoinOrganization?.id,
+    )
 
     return { user }
   }
