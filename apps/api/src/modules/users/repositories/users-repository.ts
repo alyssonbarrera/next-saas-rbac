@@ -2,6 +2,13 @@ import type { User } from '@prisma/client'
 
 import type { CreateUserDTO } from '../dtos/create-user-dto'
 
+type UsersRepositoryFindByIdResponse = {
+  id: string
+  name: string | null
+  email: string
+  avatarUrl: string | null
+} | null
+
 export abstract class UsersRepository {
   abstract save(data: CreateUserDTO): Promise<User>
   abstract saveWithOrganization(
@@ -10,4 +17,5 @@ export abstract class UsersRepository {
   ): Promise<User>
 
   abstract findByEmail(email: string): Promise<User | null>
+  abstract findById(id: string): Promise<UsersRepositoryFindByIdResponse | null>
 }
