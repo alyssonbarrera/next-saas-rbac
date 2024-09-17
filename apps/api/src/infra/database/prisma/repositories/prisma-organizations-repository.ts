@@ -7,9 +7,29 @@ import type {
 import { prisma } from '../prisma-service'
 
 export class PrismaOrganizationsRepository implements OrganizationsRepository {
-  async save(data: CreateOrganizationDTO) {
+  async save({
+    name,
+    slug,
+    domain,
+    ownerId,
+    avatarUrl,
+    shouldAttachUsersByDomain,
+  }: CreateOrganizationDTO) {
     const organization = await prisma.organization.create({
-      data,
+      data: {
+        name,
+        slug,
+        domain,
+        ownerId,
+        avatarUrl,
+        shouldAttachUsersByDomain,
+        members: {
+          create: {
+            userId: ownerId,
+            role: 'ADMIN',
+          },
+        },
+      },
     })
 
     return organization
@@ -23,6 +43,26 @@ export class PrismaOrganizationsRepository implements OrganizationsRepository {
       where: {
         domain,
         shouldAttachUsersByDomain,
+      },
+    })
+
+    return organization
+  }
+
+  async findById(id: string) {
+    const organization = await prisma.organization.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    return organization
+  }
+
+  async findByDomain(domain: string) {
+    const organization = await prisma.organization.findUnique({
+      where: {
+        domain,
       },
     })
 

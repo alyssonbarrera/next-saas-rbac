@@ -13,4 +13,7 @@ export abstract class OrganizationsRepository {
     domain,
     shouldAttachUsersByDomain,
   }: OrganizationsRepositoryFindByDomainAndShouldAttachUsersByDomain): Promise<Organization | null>
+
+  abstract findById(id: string): Promise<Organization | null>
+  abstract findByDomain(domain: string): Promise<Organization | null>
 }
