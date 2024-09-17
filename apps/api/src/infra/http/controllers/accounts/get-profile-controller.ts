@@ -13,7 +13,7 @@ export class GetProfileController {
   async handle(request: FastifyRequestWithBody, reply: FastifyReply) {
     const useCase = makeGetProfileUseCase()
 
-    const { sub } = await request.jwtVerify<{ sub: string }>()
+    const sub = await request.getCurrentUserId()
     const result = await useCase.execute({ id: sub })
 
     return reply.status(201).send(result)

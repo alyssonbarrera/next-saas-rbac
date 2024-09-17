@@ -5,6 +5,7 @@ import z from 'zod'
 import { AuthenticateWithPasswordController } from '../controllers/accounts/authenticate-with-password-controller'
 import { CreateAccountController } from '../controllers/accounts/create-account-controller'
 import { GetProfileController } from '../controllers/accounts/get-profile-controller'
+import { auth } from '../middlewares/auth'
 
 const createAccountController = new CreateAccountController()
 const authenticateWithPasswordController =
@@ -39,6 +40,12 @@ export async function accountsRoutes(app: FastifyInstance) {
         }),
         response: {
           201: z.object({
+            user: z.object({
+              id: z.string().uuid(),
+              name: z.string().nullable(),
+              email: z.string(),
+              avatarUrl: z.string().url().nullable(),
+            }),
             token: z.string(),
           }),
           401: z.object({
@@ -49,27 +56,30 @@ export async function accountsRoutes(app: FastifyInstance) {
     },
     authenticateWithPasswordController.handle,
   )
-  app.withTypeProvider<ZodTypeProvider>().get(
-    '/profile',
-    {
-      schema: {
-        tags: ['Auth'],
-        summary: 'Get authenticated user profile',
-        response: {
-          200: z.object({
-            user: z.object({
-              id: z.string().uuid(),
-              name: z.string().nullable(),
-              email: z.string(),
-              avatarUrl: z.string().url().nullable(),
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .get(
+      '/profile',
+      {
+        schema: {
+          tags: ['Auth'],
+          summary: 'Get authenticated user profile',
+          response: {
+            200: z.object({
+              user: z.object({
+                id: z.string().uuid(),
+                name: z.string().nullable(),
+                email: z.string(),
+                avatarUrl: z.string().url().nullable(),
+              }),
             }),
-          }),
-          400: z.object({
-            message: z.string(),
-          }),
+            400: z.object({
+              message: z.string(),
+            }),
+          },
         },
       },
-    },
-    getProfileController.handle,
-  )
+      getProfileController.handle,
+    )
 }
