@@ -1,4 +1,4 @@
-import { env } from '@/infra/env'
+import { env } from '@saas/env'
 
 import { app } from './app'
 

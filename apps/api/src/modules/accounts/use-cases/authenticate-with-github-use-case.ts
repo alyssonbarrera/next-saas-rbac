@@ -1,8 +1,8 @@
 import type { User } from '@prisma/client'
+import { env } from '@saas/env'
 import { z } from 'zod'
 
 import { AppError } from '@/core/errors/app-error'
-import { env } from '@/infra/env'
 import type { UsersRepository } from '@/modules/users/repositories/users-repository'
 
 import type { AccountsRepository } from '../repositories/accounts-repository'
