@@ -49,10 +49,55 @@ export class PrismaOrganizationsRepository implements OrganizationsRepository {
     return organization
   }
 
+  async getAll() {
+    const organizations = await prisma.organization.findMany()
+
+    return organizations
+  }
+
+  async getAllWhereUserIsMember(userId: string) {
+    const organizations = await prisma.organization.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        domain: true,
+        avatarUrl: true,
+        members: {
+          select: {
+            role: true,
+          },
+          where: {
+            userId,
+          },
+        },
+      },
+      where: {
+        members: {
+          some: {
+            userId,
+          },
+        },
+      },
+    })
+
+    return organizations
+  }
+
   async findById(id: string) {
     const organization = await prisma.organization.findUnique({
       where: {
         id,
+      },
+    })
+
+    return organization
+  }
+
+  async findBySlug(slug: string) {
+    const organization = await prisma.organization.findUnique({
+      where: {
+        slug,
       },
     })
 

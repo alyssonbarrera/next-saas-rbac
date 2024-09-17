@@ -5,10 +5,14 @@ import { z } from 'zod'
 
 import { CreateOrganizationController } from '../controllers/organizations/create-organization-controller'
 import { GetMembershipController } from '../controllers/organizations/get-membership-controller'
+import { GetOrganizationController } from '../controllers/organizations/get-organization-controller'
+import { GetOrganizationsController } from '../controllers/organizations/get-organizations-controller'
 import { auth } from '../middlewares/auth'
 
 const createOrganizationController = new CreateOrganizationController()
 const getMembershipController = new GetMembershipController()
+const getOrganizationsController = new GetOrganizationsController()
+const getOrganizationController = new GetOrganizationController()
 
 export async function organizationsRoutes(app: FastifyInstance) {
   app
@@ -32,10 +36,10 @@ export async function organizationsRoutes(app: FastifyInstance) {
               organization: z.object({
                 id: z.string().uuid(),
                 name: z.string(),
-                domain: z.string().nullable(),
-                avatarUrl: z.string().nullable(),
                 slug: z.string(),
                 ownerId: z.string().uuid(),
+                domain: z.string().nullable(),
+                avatarUrl: z.string().nullable(),
                 shouldAttachUsersByDomain: z.boolean(),
               }),
             }),
@@ -75,5 +79,66 @@ export async function organizationsRoutes(app: FastifyInstance) {
         },
       },
       getMembershipController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .get(
+      '/organizations',
+      {
+        schema: {
+          tags: ['Organizations'],
+          summary: 'Get organizations where user is a member',
+          security: [{ bearerAuth: [] }],
+          response: {
+            200: z.object({
+              organizations: z.array(
+                z.object({
+                  id: z.string().uuid(),
+                  name: z.string(),
+                  slug: z.string(),
+                  role: roleSchema,
+                  domain: z.string().nullable(),
+                  avatarUrl: z.string().nullable(),
+                }),
+              ),
+            }),
+          },
+        },
+      },
+      getOrganizationsController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .get(
+      '/organizations/:slug',
+      {
+        schema: {
+          tags: ['Organizations'],
+          summary: 'Get details from organization',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            slug: z.string(),
+          }),
+          response: {
+            200: z.object({
+              organization: z.object({
+                id: z.string().uuid(),
+                name: z.string(),
+                domain: z.string().nullable(),
+                avatarUrl: z.string().nullable(),
+                slug: z.string(),
+                ownerId: z.string().uuid(),
+                shouldAttachUsersByDomain: z.boolean(),
+              }),
+            }),
+            404: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      getOrganizationController.handle,
     )
 }
