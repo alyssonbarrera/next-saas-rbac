@@ -1,5 +1,8 @@
 import type { CreateUserDTO } from '@/modules/users/dtos/create-user-dto'
-import type { UsersRepository } from '@/modules/users/repositories/users-repository'
+import type {
+  UsersRepository,
+  UsersRepositoryUpdatePasswordDTO,
+} from '@/modules/users/repositories/users-repository'
 
 import { prisma } from '../prisma-service'
 
@@ -49,6 +52,19 @@ export class PrismaUsersRepository implements UsersRepository {
         name: true,
         email: true,
         avatarUrl: true,
+      },
+    })
+
+    return user
+  }
+
+  async updatePassword({ id, password }: UsersRepositoryUpdatePasswordDTO) {
+    const user = await prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        passwordHash: password,
       },
     })
 
