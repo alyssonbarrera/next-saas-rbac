@@ -1,11 +1,14 @@
+import { roleSchema } from '@saas/auth'
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
 import { CreateOrganizationController } from '../controllers/organizations/create-organization-controller'
+import { GetMembershipController } from '../controllers/organizations/get-membership-controller'
 import { auth } from '../middlewares/auth'
 
 const createOrganizationController = new CreateOrganizationController()
+const getMembershipController = new GetMembershipController()
 
 export async function organizationsRoutes(app: FastifyInstance) {
   app
@@ -43,5 +46,34 @@ export async function organizationsRoutes(app: FastifyInstance) {
         },
       },
       createOrganizationController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .get(
+      '/organizations/:slug/membership',
+      {
+        schema: {
+          tags: ['Organizations'],
+          summary: 'Get user membership on organization',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            slug: z.string(),
+          }),
+          response: {
+            200: z.object({
+              membership: z.object({
+                id: z.string().uuid(),
+                role: roleSchema,
+                organizationId: z.string().uuid(),
+              }),
+            }),
+            403: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      getMembershipController.handle,
     )
 }
