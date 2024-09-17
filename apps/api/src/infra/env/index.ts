@@ -3,6 +3,10 @@ import { z } from 'zod'
 const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   DATABASE_URL: z.string(),
+
+  GITHUB_CLIENT_ID: z.string(),
+  GITHUB_CLIENT_SECRET: z.string(),
+  GITHUB_REDIRECT_URI: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)

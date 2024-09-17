@@ -1,7 +1,7 @@
 import type { AccountProvider } from '@prisma/client'
 
 export type CreateAccountDTO = {
-  id: string
+  id?: string
   provider: AccountProvider
   providerAccountId: string
 

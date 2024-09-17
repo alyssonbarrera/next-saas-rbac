@@ -1,6 +1,6 @@
 export type CreateUserDTO = {
-  name: string
+  name?: string | null
   email: string
-  passwordHash: string
-  avatarUrl?: string
+  passwordHash?: string
+  avatarUrl?: string | null
 }

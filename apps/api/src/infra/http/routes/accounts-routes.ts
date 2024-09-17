@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
 
+import { AuthenticateWithGithubController } from '../controllers/accounts/authenticate-with-github-controller'
 import { AuthenticateWithPasswordController } from '../controllers/accounts/authenticate-with-password-controller'
 import { CreateAccountController } from '../controllers/accounts/create-account-controller'
 import { GetProfileController } from '../controllers/accounts/get-profile-controller'
@@ -15,6 +16,7 @@ const authenticateWithPasswordController =
 const getProfileController = new GetProfileController()
 const requestPasswordRecoverController = new RequestPasswordRecoverController()
 const resetPasswordController = new ResetPasswordController()
+const authenticateWithGithubController = new AuthenticateWithGithubController()
 
 export async function accountsRoutes(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -59,6 +61,33 @@ export async function accountsRoutes(app: FastifyInstance) {
       },
     },
     authenticateWithPasswordController.handle,
+  )
+  app.withTypeProvider<ZodTypeProvider>().post(
+    '/sessions/github',
+    {
+      schema: {
+        tags: ['Auth'],
+        summary: 'Authenticate with GitHub',
+        body: z.object({
+          code: z.string(),
+        }),
+        response: {
+          201: z.object({
+            user: z.object({
+              id: z.string().uuid(),
+              name: z.string().nullable(),
+              email: z.string(),
+              avatarUrl: z.string().url().nullable(),
+            }),
+            token: z.string(),
+          }),
+          401: z.object({
+            message: z.string(),
+          }),
+        },
+      },
+    },
+    authenticateWithGithubController.handle,
   )
   app
     .withTypeProvider<ZodTypeProvider>()
