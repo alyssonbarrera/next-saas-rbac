@@ -1,6 +1,7 @@
 import { $Enums, Organization } from '@prisma/client'
 
 import { CreateOrganizationDTO } from '../dtos/create-organization-dto'
+import { UpdateOrganizationDTO } from '../dtos/update-organization-dto'
 
 export type OrganizationsRepositoryFindByDomainAndShouldAttachUsersByDomain = {
   domain: string
@@ -33,4 +34,15 @@ export abstract class OrganizationsRepository {
   abstract findById(id: string): Promise<Organization | null>
   abstract findBySlug(slug: string): Promise<Organization | null>
   abstract findByDomain(domain: string): Promise<Organization | null>
+  abstract findByDomainExcludingId(
+    domain: string,
+    id: string,
+  ): Promise<Organization | null>
+
+  abstract update(
+    id: string,
+    data: UpdateOrganizationDTO,
+  ): Promise<Organization>
+
+  abstract delete(id: string): Promise<void>
 }

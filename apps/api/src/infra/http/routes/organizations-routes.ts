@@ -7,12 +7,16 @@ import { CreateOrganizationController } from '../controllers/organizations/creat
 import { GetMembershipController } from '../controllers/organizations/get-membership-controller'
 import { GetOrganizationController } from '../controllers/organizations/get-organization-controller'
 import { GetOrganizationsController } from '../controllers/organizations/get-organizations-controller'
+import { ShutdownOrganizationController } from '../controllers/organizations/shutdown-organization-controller'
+import { UpdateOrganizationController } from '../controllers/organizations/update-organization-controller'
 import { auth } from '../middlewares/auth'
 
 const createOrganizationController = new CreateOrganizationController()
 const getMembershipController = new GetMembershipController()
 const getOrganizationsController = new GetOrganizationsController()
 const getOrganizationController = new GetOrganizationController()
+const updateOrganizationController = new UpdateOrganizationController()
+const shutdownOrganizationController = new ShutdownOrganizationController()
 
 export async function organizationsRoutes(app: FastifyInstance) {
   app
@@ -140,5 +144,57 @@ export async function organizationsRoutes(app: FastifyInstance) {
         },
       },
       getOrganizationController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .put(
+      '/organizations/:slug',
+      {
+        schema: {
+          tags: ['Organizations'],
+          summary: 'Update a organization',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            slug: z.string(),
+          }),
+          body: z.object({
+            name: z.string().nullish(),
+            domain: z.string().nullish(),
+            avatarUrl: z.string().nullish(),
+            shouldAttachUsersByDomain: z.boolean().nullish(),
+          }),
+          response: {
+            204: z.null(),
+            403: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      updateOrganizationController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .delete(
+      '/organizations/:slug',
+      {
+        schema: {
+          tags: ['Organizations'],
+          summary: 'Delete a organization',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            slug: z.string(),
+          }),
+          response: {
+            204: z.null(),
+            403: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      shutdownOrganizationController.handle,
     )
 }

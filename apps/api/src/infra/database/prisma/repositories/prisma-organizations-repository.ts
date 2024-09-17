@@ -1,4 +1,5 @@
-import { CreateOrganizationDTO } from '@/modules/organizations/dtos/create-organization-dto'
+import type { CreateOrganizationDTO } from '@/modules/organizations/dtos/create-organization-dto'
+import type { UpdateOrganizationDTO } from '@/modules/organizations/dtos/update-organization-dto'
 import type {
   OrganizationsRepository,
   OrganizationsRepositoryFindByDomainAndShouldAttachUsersByDomain,
@@ -112,5 +113,37 @@ export class PrismaOrganizationsRepository implements OrganizationsRepository {
     })
 
     return organization
+  }
+
+  async findByDomainExcludingId(domain: string, id: string) {
+    const organization = await prisma.organization.findFirst({
+      where: {
+        domain,
+        id: {
+          not: id,
+        },
+      },
+    })
+
+    return organization
+  }
+
+  async update(id: string, organization: UpdateOrganizationDTO) {
+    const updatedOrganization = await prisma.organization.update({
+      where: {
+        id,
+      },
+      data: organization,
+    })
+
+    return updatedOrganization
+  }
+
+  async delete(id: string) {
+    await prisma.organization.delete({
+      where: {
+        id,
+      },
+    })
   }
 }
