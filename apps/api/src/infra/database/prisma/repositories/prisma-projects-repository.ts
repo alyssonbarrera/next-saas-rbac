@@ -55,6 +55,33 @@ export class PrismaProjectsRepository implements ProjectsRepository {
     return project
   }
 
+  async findAllByOrganizationId(organizationId: string) {
+    const projects = await prisma.project.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        slug: true,
+        createdAt: true,
+        updatedAt: true,
+        ownerId: true,
+        avatarUrl: true,
+        organizationId: true,
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+      },
+      where: { organizationId },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return projects
+  }
+
   async update(id: string, data: Prisma.ProjectUpdateInput) {
     const project = await prisma.project.update({
       where: { id },

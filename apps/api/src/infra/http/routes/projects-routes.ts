@@ -5,11 +5,13 @@ import z from 'zod'
 import { CreateProjectController } from '../controllers/projects/create-project-controller'
 import { DeleteProjectController } from '../controllers/projects/delete-project-controller'
 import { GetProjectController } from '../controllers/projects/get-project-controller'
+import { GetProjectsController } from '../controllers/projects/get-projects-controller'
 import { auth } from '../middlewares/auth'
 
 const creteProjectController = new CreateProjectController()
 const deleteProjectController = new DeleteProjectController()
 const getProjectController = new GetProjectController()
+const getProjectsController = new GetProjectsController()
 
 export async function projectsRoutes(app: FastifyInstance) {
   app
@@ -122,5 +124,47 @@ export async function projectsRoutes(app: FastifyInstance) {
         },
       },
       getProjectController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .get(
+      '/organizations/:organizationSlug/projects',
+      {
+        schema: {
+          tags: ['Projects'],
+          summary: 'Get all organization projects',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            organizationSlug: z.string(),
+          }),
+          response: {
+            200: z.object({
+              projects: z.array(
+                z.object({
+                  id: z.string().uuid(),
+                  name: z.string(),
+                  slug: z.string(),
+                  description: z.string(),
+                  avatarUrl: z.string().nullable(),
+                  organizationId: z.string().uuid(),
+                  ownerId: z.string().uuid(),
+                  createdAt: z.date(),
+                  updatedAt: z.date(),
+                  owner: z.object({
+                    id: z.string().uuid(),
+                    name: z.string().nullable(),
+                    avatarUrl: z.string().nullable(),
+                  }),
+                }),
+              ),
+            }),
+            403: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      getProjectsController.handle,
     )
 }

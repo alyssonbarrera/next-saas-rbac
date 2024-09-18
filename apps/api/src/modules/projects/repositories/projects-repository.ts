@@ -2,7 +2,7 @@ import type { Prisma, Project } from '@prisma/client'
 
 import type { CreateProjectDTO } from '../dtos/create-project-dto'
 
-type FindBySlugAndOrganizationIdResponse = Project & {
+export type ProjectWithOwner = Project & {
   owner: {
     id: string
     name: string | null
@@ -21,7 +21,11 @@ export abstract class ProjectsRepository {
   abstract findBySlugAndOrganizationId(
     slug: string,
     organizationId: string,
-  ): Promise<FindBySlugAndOrganizationIdResponse | null>
+  ): Promise<ProjectWithOwner | null>
+
+  abstract findAllByOrganizationId(
+    organizationId: string,
+  ): Promise<ProjectWithOwner[]>
 
   abstract update(
     id: string,
