@@ -8,6 +8,7 @@ import { GetMembershipController } from '../controllers/organizations/get-member
 import { GetOrganizationController } from '../controllers/organizations/get-organization-controller'
 import { GetOrganizationsController } from '../controllers/organizations/get-organizations-controller'
 import { ShutdownOrganizationController } from '../controllers/organizations/shutdown-organization-controller'
+import { TransferOrganizationController } from '../controllers/organizations/transfer-organization-controller'
 import { UpdateOrganizationController } from '../controllers/organizations/update-organization-controller'
 import { auth } from '../middlewares/auth'
 
@@ -17,6 +18,7 @@ const getOrganizationsController = new GetOrganizationsController()
 const getOrganizationController = new GetOrganizationController()
 const updateOrganizationController = new UpdateOrganizationController()
 const shutdownOrganizationController = new ShutdownOrganizationController()
+const transferOrganizationController = new TransferOrganizationController()
 
 export async function organizationsRoutes(app: FastifyInstance) {
   app
@@ -188,7 +190,17 @@ export async function organizationsRoutes(app: FastifyInstance) {
             slug: z.string(),
           }),
           response: {
-            204: z.null(),
+            204: z.object({
+              organization: z.object({
+                id: z.string().uuid(),
+                name: z.string(),
+                domain: z.string().nullable(),
+                avatarUrl: z.string().nullable(),
+                slug: z.string(),
+                ownerId: z.string().uuid(),
+                shouldAttachUsersByDomain: z.boolean(),
+              }),
+            }),
             403: z.object({
               message: z.string(),
             }),
@@ -196,5 +208,31 @@ export async function organizationsRoutes(app: FastifyInstance) {
         },
       },
       shutdownOrganizationController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .patch(
+      '/organizations/:slug/owner',
+      {
+        schema: {
+          tags: ['Organizations'],
+          summary: 'Transfer a organization ownership',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            slug: z.string(),
+          }),
+          body: z.object({
+            transferToUserId: z.string().uuid(),
+          }),
+          response: {
+            200: z.null(),
+            403: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      transferOrganizationController.handle,
     )
 }

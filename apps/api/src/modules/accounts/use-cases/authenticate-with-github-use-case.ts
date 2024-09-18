@@ -93,7 +93,7 @@ export class AuthenticateWithGithubUseCase {
 
     let account = await this.accountsRepository.findByProviderAndUserId({
       provider: 'GITHUB',
-      userId: githubId,
+      userId: user.id,
     })
 
     if (!account) {

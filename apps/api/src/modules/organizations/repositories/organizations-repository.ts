@@ -1,7 +1,8 @@
-import { $Enums, Organization } from '@prisma/client'
+import type { $Enums, Member, Organization } from '@prisma/client'
 
-import { CreateOrganizationDTO } from '../dtos/create-organization-dto'
-import { UpdateOrganizationDTO } from '../dtos/update-organization-dto'
+import type { CreateOrganizationDTO } from '../dtos/create-organization-dto'
+import type { TransferOwnershipDTO } from '../dtos/transfer-ownership-dto'
+import type { UpdateOrganizationDTO } from '../dtos/update-organization-dto'
 
 export type OrganizationsRepositoryFindByDomainAndShouldAttachUsersByDomain = {
   domain: string
@@ -43,6 +44,16 @@ export abstract class OrganizationsRepository {
     id: string,
     data: UpdateOrganizationDTO,
   ): Promise<Organization>
+
+  abstract updateOwner(id: string, ownerId: string): Promise<Organization>
+
+  abstract transferOwnership({
+    newOwnerId,
+    organizationId,
+  }: TransferOwnershipDTO): Promise<{
+    member: Member
+    organization: Organization
+  }>
 
   abstract delete(id: string): Promise<void>
 }

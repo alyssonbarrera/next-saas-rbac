@@ -1,4 +1,5 @@
 import type { CreateOrganizationDTO } from '@/modules/organizations/dtos/create-organization-dto'
+import { TransferOwnershipDTO } from '@/modules/organizations/dtos/transfer-ownership-dto'
 import type { UpdateOrganizationDTO } from '@/modules/organizations/dtos/update-organization-dto'
 import type {
   OrganizationsRepository,
@@ -137,6 +138,48 @@ export class PrismaOrganizationsRepository implements OrganizationsRepository {
     })
 
     return updatedOrganization
+  }
+
+  async updateOwner(id: string, ownerId: string) {
+    const updatedOrganization = await prisma.organization.update({
+      where: {
+        id,
+      },
+      data: {
+        ownerId,
+      },
+    })
+
+    return updatedOrganization
+  }
+
+  async transferOwnership({
+    newOwnerId,
+    organizationId,
+  }: TransferOwnershipDTO) {
+    const [member, organization] = await prisma.$transaction([
+      prisma.member.update({
+        where: {
+          organizationId_userId: {
+            organizationId,
+            userId: newOwnerId,
+          },
+        },
+        data: {
+          role: 'ADMIN',
+        },
+      }),
+      prisma.organization.update({
+        where: {
+          id: organizationId,
+        },
+        data: {
+          ownerId: newOwnerId,
+        },
+      }),
+    ])
+
+    return { member, organization }
   }
 
   async delete(id: string) {
