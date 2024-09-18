@@ -26,6 +26,35 @@ export class PrismaProjectsRepository implements ProjectsRepository {
     return project
   }
 
+  async findBySlugAndOrganizationId(slug: string, organizationId: string) {
+    const project = await prisma.project.findUnique({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        slug: true,
+        createdAt: true,
+        updatedAt: true,
+        ownerId: true,
+        avatarUrl: true,
+        organizationId: true,
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+      },
+      where: {
+        slug,
+        organizationId,
+      },
+    })
+
+    return project
+  }
+
   async update(id: string, data: Prisma.ProjectUpdateInput) {
     const project = await prisma.project.update({
       where: { id },

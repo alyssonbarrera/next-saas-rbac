@@ -4,10 +4,12 @@ import z from 'zod'
 
 import { CreateProjectController } from '../controllers/projects/create-project-controller'
 import { DeleteProjectController } from '../controllers/projects/delete-project-controller'
+import { GetProjectController } from '../controllers/projects/get-project-controller'
 import { auth } from '../middlewares/auth'
 
 const creteProjectController = new CreateProjectController()
 const deleteProjectController = new DeleteProjectController()
+const getProjectController = new GetProjectController()
 
 export async function projectsRoutes(app: FastifyInstance) {
   app
@@ -76,5 +78,49 @@ export async function projectsRoutes(app: FastifyInstance) {
         },
       },
       deleteProjectController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .get(
+      '/organizations/:organizationSlug/projects/:projectSlug',
+      {
+        schema: {
+          tags: ['Projects'],
+          summary: 'Get project details',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            projectSlug: z.string(),
+            organizationSlug: z.string(),
+          }),
+          response: {
+            200: z.object({
+              project: z.object({
+                id: z.string().uuid(),
+                name: z.string(),
+                slug: z.string(),
+                description: z.string(),
+                avatarUrl: z.string().nullable(),
+                organizationId: z.string().uuid(),
+                ownerId: z.string().uuid(),
+                createdAt: z.date(),
+                updatedAt: z.date(),
+                owner: z.object({
+                  id: z.string().uuid(),
+                  name: z.string().nullable(),
+                  avatarUrl: z.string().nullable(),
+                }),
+              }),
+            }),
+            403: z.object({
+              message: z.string(),
+            }),
+            404: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      getProjectController.handle,
     )
 }
