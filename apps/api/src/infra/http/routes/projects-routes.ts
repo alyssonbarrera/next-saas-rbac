@@ -6,12 +6,14 @@ import { CreateProjectController } from '../controllers/projects/create-project-
 import { DeleteProjectController } from '../controllers/projects/delete-project-controller'
 import { GetProjectController } from '../controllers/projects/get-project-controller'
 import { GetProjectsController } from '../controllers/projects/get-projects-controller'
+import { UpdateProjectController } from '../controllers/projects/update-project-controller'
 import { auth } from '../middlewares/auth'
 
 const creteProjectController = new CreateProjectController()
 const deleteProjectController = new DeleteProjectController()
 const getProjectController = new GetProjectController()
 const getProjectsController = new GetProjectsController()
+const updateProjectController = new UpdateProjectController()
 
 export async function projectsRoutes(app: FastifyInstance) {
   app
@@ -166,5 +168,49 @@ export async function projectsRoutes(app: FastifyInstance) {
         },
       },
       getProjectsController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .put(
+      '/organizations/:organizationSlug/projects/:projectSlug',
+      {
+        schema: {
+          tags: ['Projects'],
+          summary: 'Update a project',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            projectSlug: z.string(),
+            organizationSlug: z.string(),
+          }),
+          body: z.object({
+            name: z.string().nullish(),
+            description: z.string().nullish(),
+            avatarUrl: z.string().nullish(),
+          }),
+          response: {
+            200: z.object({
+              project: z.object({
+                id: z.string().uuid(),
+                name: z.string(),
+                slug: z.string(),
+                description: z.string(),
+                avatarUrl: z.string().nullable(),
+                organizationId: z.string().uuid(),
+                ownerId: z.string().uuid(),
+                createdAt: z.date(),
+                updatedAt: z.date(),
+              }),
+            }),
+            403: z.object({
+              message: z.string(),
+            }),
+            404: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      updateProjectController.handle,
     )
 }
