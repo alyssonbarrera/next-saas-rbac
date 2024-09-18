@@ -14,6 +14,7 @@ import {
 import { errorHandler } from './error-handler'
 import { accountsRoutes } from './routes/accounts-routes'
 import { organizationsRoutes } from './routes/organizations-routes'
+import { projectsRoutes } from './routes/projects-routes'
 
 export const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -55,3 +56,4 @@ app.register(fastifyCors, {
 
 app.register(accountsRoutes)
 app.register(organizationsRoutes)
+app.register(projectsRoutes)
