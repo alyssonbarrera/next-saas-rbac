@@ -50,6 +50,31 @@ export class PrismaMembersRepository implements MembersRepository {
     return member
   }
 
+  async findAllByOrganizationId(organizationId: string) {
+    const members = await prisma.member.findMany({
+      select: {
+        id: true,
+        role: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+      },
+      where: {
+        organizationId,
+      },
+      orderBy: {
+        role: 'asc',
+      },
+    })
+
+    return members
+  }
+
   async updateRoleByOrganizationAndUser({
     role,
     userId,

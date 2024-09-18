@@ -13,6 +13,7 @@ import {
 
 import { errorHandler } from './error-handler'
 import { accountsRoutes } from './routes/accounts-routes'
+import { membersRoutes } from './routes/members-routes'
 import { organizationsRoutes } from './routes/organizations-routes'
 import { projectsRoutes } from './routes/projects-routes'
 
@@ -57,3 +58,4 @@ app.register(fastifyCors, {
 app.register(accountsRoutes)
 app.register(organizationsRoutes)
 app.register(projectsRoutes)
+app.register(membersRoutes)

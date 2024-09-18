@@ -26,18 +26,6 @@ export class UpdateProjectController {
       data: { name, avatarUrl, description },
     })
 
-    return reply.status(201).send({
-      project: {
-        id: result.project.id,
-        name: result.project.name,
-        slug: result.project.slug,
-        description: result.project.description,
-        avatarUrl: result.project.avatarUrl,
-        ownerId: result.project.ownerId,
-        organizationId: result.project.organizationId,
-        createdAt: result.project.createdAt,
-        updatedAt: result.project.updatedAt,
-      },
-    })
+    return reply.status(200).send(result)
   }
 }

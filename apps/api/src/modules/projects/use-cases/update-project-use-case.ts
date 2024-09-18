@@ -29,8 +29,6 @@ export class UpdateProjectUseCase {
     organization,
     data: { name, avatarUrl, description },
   }: UpdateProjectUseCaseRequest): Promise<UpdateProjectUseCaseResponse> {
-    const { cannot } = getUserPermissions(userId, membership.role)
-
     const project = await this.projectsRepository.findBySlugAndOrganizationId(
       slug,
       organization.id,
@@ -39,6 +37,8 @@ export class UpdateProjectUseCase {
     if (!project) {
       throw new AppError('Project not found.', 404)
     }
+
+    const { cannot } = getUserPermissions(userId, membership.role)
 
     const authProject = projectSchema.parse({
       id: project.id,
