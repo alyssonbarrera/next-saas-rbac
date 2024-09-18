@@ -167,7 +167,14 @@ export async function organizationsRoutes(app: FastifyInstance) {
             shouldAttachUsersByDomain: z.boolean().nullish(),
           }),
           response: {
-            204: z.null(),
+            200: z.object({
+              organization: z.object({
+                name: z.string(),
+                domain: z.string().nullable(),
+                avatarUrl: z.string().url().nullable(),
+                shouldAttachUsersByDomain: z.boolean(),
+              }),
+            }),
             403: z.object({
               message: z.string(),
             }),

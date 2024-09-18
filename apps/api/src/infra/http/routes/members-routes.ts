@@ -4,9 +4,11 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
 
 import { GetMembersController } from '../controllers/members/get-members-controller'
+import { UpdateMemberController } from '../controllers/members/update-member-controller'
 import { auth } from '../middlewares/auth'
 
 const getMembersController = new GetMembersController()
+const updateMemberController = new UpdateMemberController()
 
 export async function membersRoutes(app: FastifyInstance) {
   app
@@ -42,5 +44,39 @@ export async function membersRoutes(app: FastifyInstance) {
         },
       },
       getMembersController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .put(
+      '/organizations/:slug/members/:memberId',
+      {
+        schema: {
+          tags: ['Members'],
+          summary: 'Update a member',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            slug: z.string(),
+            memberId: z.string().uuid(),
+          }),
+          body: z.object({
+            role: roleSchema,
+          }),
+          response: {
+            200: z.object({
+              member: z.object({
+                id: z.string().uuid(),
+                role: roleSchema,
+                organizationId: z.string().uuid(),
+                userId: z.string().uuid(),
+              }),
+            }),
+            403: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      updateMemberController.handle,
     )
 }

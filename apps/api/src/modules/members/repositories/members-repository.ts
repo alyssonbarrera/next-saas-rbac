@@ -30,6 +30,11 @@ export abstract class MembersRepository {
     userId: string,
   ): Promise<Member | null>
 
+  abstract findMemberByIdAndOrganization(
+    memberId: string,
+    organizationId: string,
+  ): Promise<Member | null>
+
   abstract findAllByOrganizationId(
     organizationId: string,
   ): Promise<MemberWithUser[]>
@@ -37,6 +42,16 @@ export abstract class MembersRepository {
   abstract updateRoleByOrganizationAndUser(
     data: UpdateRoleByOrganizationAndUserDTO,
   ): Promise<Member>
+
+  abstract update({
+    id,
+    organizationId,
+    data,
+  }: {
+    id: string
+    organizationId: string
+    data: Prisma.MemberUpdateInput
+  }): Promise<Member>
 
   abstract delete(id: string): Promise<void>
 }

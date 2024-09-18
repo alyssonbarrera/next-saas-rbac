@@ -24,7 +24,7 @@ export class UpdateOrganizationController {
       data: { name, domain, avatarUrl, shouldAttachUsersByDomain },
     })
 
-    return reply.status(201).send({
+    return reply.status(200).send({
       organization: {
         name: result.organization.name,
         domain: result.organization.domain,

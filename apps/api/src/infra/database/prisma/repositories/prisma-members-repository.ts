@@ -75,6 +75,20 @@ export class PrismaMembersRepository implements MembersRepository {
     return members
   }
 
+  async findMemberByIdAndOrganization(
+    memberId: string,
+    organizationId: string,
+  ) {
+    const member = await prisma.member.findUnique({
+      where: {
+        id: memberId,
+        organizationId,
+      },
+    })
+
+    return member
+  }
+
   async updateRoleByOrganizationAndUser({
     role,
     userId,
@@ -90,6 +104,26 @@ export class PrismaMembersRepository implements MembersRepository {
       data: {
         role,
       },
+    })
+
+    return member
+  }
+
+  async update({
+    id,
+    organizationId,
+    data,
+  }: {
+    id: string
+    organizationId: string
+    data: Prisma.MemberUpdateInput
+  }) {
+    const member = await prisma.member.update({
+      where: {
+        id,
+        organizationId,
+      },
+      data,
     })
 
     return member

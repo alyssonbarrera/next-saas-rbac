@@ -3,15 +3,14 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 import { makeGetMembersUseCase } from '@/modules/members/factories/make-get-members-use-case'
 
 type FastifyRequestWithBody = FastifyRequest<{
-  Params: { organizationSlug: string }
+  Params: { slug: string }
 }>
 
 export class GetMembersController {
   async handle(request: FastifyRequestWithBody, reply: FastifyReply) {
-    const { organizationSlug } = request.params
+    const { slug } = request.params
     const userId = await request.getCurrentUserId()
-    const { membership, organization } =
-      await request.getUserMembership(organizationSlug)
+    const { membership, organization } = await request.getUserMembership(slug)
 
     const useCase = makeGetMembersUseCase()
     const { members } = await useCase.execute({
