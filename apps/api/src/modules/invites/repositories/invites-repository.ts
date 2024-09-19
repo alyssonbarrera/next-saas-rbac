@@ -37,6 +37,10 @@ export abstract class InvitesRepository {
     organizationId: string,
   ): Promise<InviteWithAuthor[]>
 
+  abstract findAllByUser(
+    userEmail: string,
+  ): Promise<InviteWithAuthorAndOrganization[]>
+
   abstract delete(id: string): Promise<void>
   abstract deleteByEmailAndOrganization(
     email: string,

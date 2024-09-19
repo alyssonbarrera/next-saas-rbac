@@ -7,6 +7,7 @@ import { AcceptInviteController } from '../controllers/invites/accept-invite-con
 import { CreateInviteController } from '../controllers/invites/create-invite-controller'
 import { GetInviteController } from '../controllers/invites/get-invite-controller'
 import { GetInvitesController } from '../controllers/invites/get-invites-controller'
+import { GetPendingInvitesController } from '../controllers/invites/get-pending-invites-controller'
 import { RejectInviteController } from '../controllers/invites/reject-invite-controller'
 import { RevokeInviteController } from '../controllers/invites/revoke-invite-controller'
 import { auth } from '../middlewares/auth'
@@ -17,6 +18,7 @@ const getInvitesController = new GetInvitesController()
 const acceptInviteController = new AcceptInviteController()
 const rejectInviteController = new RejectInviteController()
 const revokeInviteController = new RevokeInviteController()
+const getPendingInvitesController = new GetPendingInvitesController()
 
 export async function invitesRoutes(app: FastifyInstance) {
   app
@@ -217,4 +219,38 @@ export async function invitesRoutes(app: FastifyInstance) {
       },
       revokeInviteController.handle,
     )
+  app.withTypeProvider<ZodTypeProvider>().get(
+    '/pending-invites',
+    {
+      schema: {
+        tags: ['Invites'],
+        summary: 'Get all user pending invites',
+        response: {
+          200: z.object({
+            invites: z.array(
+              z.object({
+                id: z.string().uuid(),
+                email: z.string().email(),
+                role: roleSchema,
+                createdAt: z.date(),
+                author: z
+                  .object({
+                    id: z.string(),
+                    name: z.string().nullable(),
+                    avatarUrl: z.string().nullable(),
+                  })
+                  .nullable(),
+                organization: z.object({
+                  id: z.string(),
+                  name: z.string(),
+                  avatarUrl: z.string().nullable(),
+                }),
+              }),
+            ),
+          }),
+        },
+      },
+    },
+    getPendingInvitesController.handle,
+  )
 }

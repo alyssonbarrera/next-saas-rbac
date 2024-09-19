@@ -91,6 +91,39 @@ export class PrismaInvitesRepository implements InvitesRepository {
     return invites
   }
 
+  async findAllByUser(userEmail: string) {
+    const invites = await prisma.invite.findMany({
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+      },
+      where: {
+        email: userEmail,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return invites
+  }
+
   async delete(id: string) {
     await prisma.invite.delete({
       where: {
