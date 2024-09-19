@@ -3,7 +3,7 @@ import type { Role } from '@saas/auth'
 
 import type { CreateInviteDTO } from '../dtos/create-invite-dto'
 
-export type InviteWithAuthorAndOrganization = {
+export type InviteWithAuthor = {
   id: string
   email: string
   role: Role
@@ -13,6 +13,9 @@ export type InviteWithAuthorAndOrganization = {
     name: string | null
     avatarUrl: string | null
   } | null
+}
+
+export type InviteWithAuthorAndOrganization = InviteWithAuthor & {
   organization: {
     id: string
     name: string
@@ -29,6 +32,10 @@ export abstract class InvitesRepository {
     email: string,
     organizationId: string,
   ): Promise<Invite | null>
+
+  abstract findAllByOrganization(
+    organizationId: string,
+  ): Promise<InviteWithAuthor[]>
 
   abstract delete(id: string): Promise<void>
   abstract deleteByEmailAndOrganization(

@@ -5,10 +5,12 @@ import z from 'zod'
 
 import { CreateInviteController } from '../controllers/invites/create-invite-controller'
 import { GetInviteController } from '../controllers/invites/get-invite-controller'
+import { GetInvitesController } from '../controllers/invites/get-invites-controller'
 import { auth } from '../middlewares/auth'
 
 const createInviteController = new CreateInviteController()
 const getInviteController = new GetInviteController()
+const getInvitesController = new GetInvitesController()
 
 export async function invitesRoutes(app: FastifyInstance) {
   app
@@ -91,4 +93,43 @@ export async function invitesRoutes(app: FastifyInstance) {
     },
     getInviteController.handle,
   )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .get(
+      '/organizations/:organizationSlug/invites',
+      {
+        schema: {
+          tags: ['Invites'],
+          summary: 'Get all organization invites',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            organizationSlug: z.string(),
+          }),
+          response: {
+            200: z.object({
+              invites: z.array(
+                z.object({
+                  id: z.string().uuid(),
+                  email: z.string().email(),
+                  role: roleSchema,
+                  createdAt: z.date(),
+                  author: z
+                    .object({
+                      id: z.string(),
+                      name: z.string().nullable(),
+                      avatarUrl: z.string().nullable(),
+                    })
+                    .nullable(),
+                }),
+              ),
+            }),
+            403: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      getInvitesController.handle,
+    )
 }
