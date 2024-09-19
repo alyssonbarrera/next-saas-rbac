@@ -3,14 +3,18 @@ import type { FastifyInstance } from 'fastify'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
 
+import { AcceptInviteController } from '../controllers/invites/accept-invite-controller'
 import { CreateInviteController } from '../controllers/invites/create-invite-controller'
 import { GetInviteController } from '../controllers/invites/get-invite-controller'
 import { GetInvitesController } from '../controllers/invites/get-invites-controller'
+import { RejectInviteController } from '../controllers/invites/reject-invite-controller'
 import { auth } from '../middlewares/auth'
 
 const createInviteController = new CreateInviteController()
 const getInviteController = new GetInviteController()
 const getInvitesController = new GetInvitesController()
+const acceptInviteController = new AcceptInviteController()
+const rejectInviteController = new RejectInviteController()
 
 export async function invitesRoutes(app: FastifyInstance) {
   app
@@ -131,5 +135,57 @@ export async function invitesRoutes(app: FastifyInstance) {
         },
       },
       getInvitesController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .post(
+      '/invites/:id/accept',
+      {
+        schema: {
+          tags: ['Invites'],
+          summary: 'Accept an invite',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            id: z.string().uuid(),
+          }),
+          response: {
+            204: z.null(),
+            403: z.object({
+              message: z.string(),
+            }),
+            404: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      acceptInviteController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .post(
+      '/invites/:id/reject',
+      {
+        schema: {
+          tags: ['Invites'],
+          summary: 'Reject an invite',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            id: z.string().uuid(),
+          }),
+          response: {
+            204: z.null(),
+            403: z.object({
+              message: z.string(),
+            }),
+            404: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      rejectInviteController.handle,
     )
 }

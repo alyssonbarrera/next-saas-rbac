@@ -1,6 +1,7 @@
 import type { Member, Organization, Prisma } from '@prisma/client'
-import { Role } from '@saas/auth'
+import type { Role } from '@saas/auth'
 
+import type { CreateMemberDTO } from '../dtos/create-member-dto'
 import type { FindByUserIdAndOrganizationSlugDTO } from '../dtos/find-by-user-id-and-organization-slug-dto'
 import type { UpdateRoleByOrganizationAndUserDTO } from '../dtos/update-role-by-organization-and-user-dto'
 
@@ -20,7 +21,12 @@ export type MemberWithUser = {
 }
 
 export abstract class MembersRepository {
-  abstract save(member: Prisma.MemberCreateInput): Promise<Member>
+  abstract save(data: CreateMemberDTO): Promise<Member>
+  abstract saveAndDeleteInvite(
+    data: CreateMemberDTO,
+    inviteId: string,
+  ): Promise<Member>
+
   abstract findByUserIdAndOrganizationSlug(
     params: FindByUserIdAndOrganizationSlugDTO,
   ): Promise<FindByUserIdAndOrganizationSlugResponse | null>

@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client'
 
+import { CreateMemberDTO } from '@/modules/members/dtos/create-member-dto'
 import type { FindByUserIdAndOrganizationSlugDTO } from '@/modules/members/dtos/find-by-user-id-and-organization-slug-dto'
 import type { UpdateRoleByOrganizationAndUserDTO } from '@/modules/members/dtos/update-role-by-organization-and-user-dto'
 import type { MembersRepository } from '@/modules/members/repositories/members-repository'
@@ -7,10 +8,25 @@ import type { MembersRepository } from '@/modules/members/repositories/members-r
 import { prisma } from '../prisma-service'
 
 export class PrismaMembersRepository implements MembersRepository {
-  async save(data: Prisma.MemberCreateInput) {
+  async save(data: CreateMemberDTO) {
     const member = await prisma.member.create({
       data,
     })
+
+    return member
+  }
+
+  async saveAndDeleteInvite(data: CreateMemberDTO, inviteId: string) {
+    const [member] = await prisma.$transaction([
+      prisma.member.create({
+        data,
+      }),
+      prisma.invite.delete({
+        where: {
+          id: inviteId,
+        },
+      }),
+    ])
 
     return member
   }
