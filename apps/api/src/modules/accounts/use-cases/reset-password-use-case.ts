@@ -10,7 +10,7 @@ type ResetPasswordUseCaseRequest = {
   password: string
 }
 
-type ResetPasswordUseCaseResponse = null
+type ResetPasswordUseCaseResponse = void
 
 export class ResetPasswordUseCase {
   constructor(
@@ -30,13 +30,10 @@ export class ResetPasswordUseCase {
 
     const passwordHash = await hash(password, 14)
 
-    await this.usersRepository.updatePassword({
-      id: tokenFromCode.userId,
+    await this.usersRepository.updatePasswordAndDeleteToken({
+      userId: tokenFromCode.userId,
+      tokenId: tokenFromCode.id,
       password: passwordHash,
     })
-
-    await this.tokensRepository.delete(tokenFromCode.id)
-
-    return null
   }
 }

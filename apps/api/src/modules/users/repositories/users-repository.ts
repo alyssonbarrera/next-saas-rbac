@@ -1,7 +1,7 @@
 import type { User } from '@prisma/client'
 
 import type { CreateUserDTO } from '../dtos/create-user-dto'
-import type { UpdatePasswordDTO } from '../dtos/update-password-dto'
+import type { UpdatePasswordAndDeleteTokenDTO } from '../dtos/update-password-dto'
 
 type UsersRepositoryFindByIdResponse = {
   id: string
@@ -20,5 +20,7 @@ export abstract class UsersRepository {
   abstract findByEmail(email: string): Promise<User | null>
   abstract findById(id: string): Promise<UsersRepositoryFindByIdResponse | null>
 
-  abstract updatePassword(data: UpdatePasswordDTO): Promise<User>
+  abstract updatePasswordAndDeleteToken(
+    data: UpdatePasswordAndDeleteTokenDTO,
+  ): Promise<User>
 }

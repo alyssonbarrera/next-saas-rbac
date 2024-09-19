@@ -1,4 +1,5 @@
-export type UpdatePasswordDTO = {
-  id: string
+export type UpdatePasswordAndDeleteTokenDTO = {
+  tokenId: string
+  userId: string
   password: string
 }

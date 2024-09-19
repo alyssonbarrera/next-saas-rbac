@@ -1,5 +1,5 @@
 import type { CreateUserDTO } from '@/modules/users/dtos/create-user-dto'
-import type { UpdatePasswordDTO } from '@/modules/users/dtos/update-password-dto'
+import type { UpdatePasswordAndDeleteTokenDTO } from '@/modules/users/dtos/update-password-dto'
 import type { UsersRepository } from '@/modules/users/repositories/users-repository'
 
 import { prisma } from '../prisma-service'
@@ -56,15 +56,26 @@ export class PrismaUsersRepository implements UsersRepository {
     return user
   }
 
-  async updatePassword({ id, password }: UpdatePasswordDTO) {
-    const user = await prisma.user.update({
-      where: {
-        id,
-      },
-      data: {
-        passwordHash: password,
-      },
-    })
+  async updatePasswordAndDeleteToken({
+    userId,
+    tokenId,
+    password,
+  }: UpdatePasswordAndDeleteTokenDTO) {
+    const [user] = await prisma.$transaction([
+      prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          passwordHash: password,
+        },
+      }),
+      prisma.token.delete({
+        where: {
+          id: tokenId,
+        },
+      }),
+    ])
 
     return user
   }
