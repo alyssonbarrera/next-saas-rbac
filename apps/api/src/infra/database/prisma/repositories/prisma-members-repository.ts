@@ -136,4 +136,13 @@ export class PrismaMembersRepository implements MembersRepository {
       },
     })
   }
+
+  async deleteByOrganization(id: string, organizationId: string) {
+    await prisma.member.delete({
+      where: {
+        id,
+        organizationId,
+      },
+    })
+  }
 }

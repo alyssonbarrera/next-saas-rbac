@@ -4,11 +4,13 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
 
 import { GetMembersController } from '../controllers/members/get-members-controller'
+import { RemoveMemberController } from '../controllers/members/remove-member-controller'
 import { UpdateMemberController } from '../controllers/members/update-member-controller'
 import { auth } from '../middlewares/auth'
 
 const getMembersController = new GetMembersController()
 const updateMemberController = new UpdateMemberController()
+const removeMemberController = new RemoveMemberController()
 
 export async function membersRoutes(app: FastifyInstance) {
   app
@@ -78,5 +80,32 @@ export async function membersRoutes(app: FastifyInstance) {
         },
       },
       updateMemberController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .delete(
+      '/organizations/:slug/members/:memberId',
+      {
+        schema: {
+          tags: ['Members'],
+          summary: 'Delete a member',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            slug: z.string(),
+            memberId: z.string().uuid(),
+          }),
+          response: {
+            204: z.null(),
+            403: z.object({
+              message: z.string(),
+            }),
+            404: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      removeMemberController.handle,
     )
 }

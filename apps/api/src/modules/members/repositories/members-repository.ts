@@ -54,4 +54,8 @@ export abstract class MembersRepository {
   }): Promise<Member>
 
   abstract delete(id: string): Promise<void>
+  abstract deleteByOrganization(
+    id: string,
+    organizationId: string,
+  ): Promise<void>
 }
