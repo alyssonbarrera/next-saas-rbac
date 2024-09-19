@@ -107,4 +107,13 @@ export class PrismaInvitesRepository implements InvitesRepository {
       },
     })
   }
+
+  async deleteByIdAndOrganization(id: string, organizationId: string) {
+    await prisma.invite.delete({
+      where: {
+        id,
+        organizationId,
+      },
+    })
+  }
 }

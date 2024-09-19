@@ -8,6 +8,7 @@ import { CreateInviteController } from '../controllers/invites/create-invite-con
 import { GetInviteController } from '../controllers/invites/get-invite-controller'
 import { GetInvitesController } from '../controllers/invites/get-invites-controller'
 import { RejectInviteController } from '../controllers/invites/reject-invite-controller'
+import { RevokeInviteController } from '../controllers/invites/revoke-invite-controller'
 import { auth } from '../middlewares/auth'
 
 const createInviteController = new CreateInviteController()
@@ -15,6 +16,7 @@ const getInviteController = new GetInviteController()
 const getInvitesController = new GetInvitesController()
 const acceptInviteController = new AcceptInviteController()
 const rejectInviteController = new RejectInviteController()
+const revokeInviteController = new RevokeInviteController()
 
 export async function invitesRoutes(app: FastifyInstance) {
   app
@@ -187,5 +189,32 @@ export async function invitesRoutes(app: FastifyInstance) {
         },
       },
       rejectInviteController.handle,
+    )
+  app
+    .withTypeProvider<ZodTypeProvider>()
+    .register(auth)
+    .delete(
+      '/organizations/:organizationSlug/invites/:id',
+      {
+        schema: {
+          tags: ['Invites'],
+          summary: 'Revoke an invite',
+          security: [{ bearerAuth: [] }],
+          params: z.object({
+            id: z.string().uuid(),
+            organizationSlug: z.string(),
+          }),
+          response: {
+            204: z.null(),
+            403: z.object({
+              message: z.string(),
+            }),
+            404: z.object({
+              message: z.string(),
+            }),
+          },
+        },
+      },
+      revokeInviteController.handle,
     )
 }

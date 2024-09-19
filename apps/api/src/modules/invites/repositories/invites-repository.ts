@@ -42,4 +42,9 @@ export abstract class InvitesRepository {
     email: string,
     organizationId: string,
   ): Promise<void>
+
+  abstract deleteByIdAndOrganization(
+    id: string,
+    organizationId: string,
+  ): Promise<void>
 }
