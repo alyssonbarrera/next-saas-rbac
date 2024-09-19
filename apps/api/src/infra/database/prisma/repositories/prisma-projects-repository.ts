@@ -94,4 +94,10 @@ export class PrismaProjectsRepository implements ProjectsRepository {
   async delete(id: string) {
     await prisma.project.delete({ where: { id } })
   }
+
+  async countByOrganization(organizationId: string) {
+    const count = await prisma.project.count({ where: { organizationId } })
+
+    return count
+  }
 }

@@ -33,4 +33,6 @@ export abstract class ProjectsRepository {
   ): Promise<Project>
 
   abstract delete(id: string): Promise<void>
+
+  abstract countByOrganization(organizationId: string): Promise<number>
 }

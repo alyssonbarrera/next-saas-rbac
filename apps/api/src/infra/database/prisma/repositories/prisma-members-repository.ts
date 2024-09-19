@@ -174,4 +174,15 @@ export class PrismaMembersRepository implements MembersRepository {
       },
     })
   }
+
+  async countByOrganization(organizationId: string) {
+    const count = await prisma.member.count({
+      where: {
+        organizationId,
+        role: { not: 'BILLING' },
+      },
+    })
+
+    return count
+  }
 }

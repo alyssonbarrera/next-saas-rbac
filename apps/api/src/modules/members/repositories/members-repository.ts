@@ -69,4 +69,6 @@ export abstract class MembersRepository {
     id: string,
     organizationId: string,
   ): Promise<void>
+
+  abstract countByOrganization(organizationId: string): Promise<number>
 }
