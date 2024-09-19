@@ -4,9 +4,11 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
 
 import { CreateInviteController } from '../controllers/invites/create-invite-controller'
+import { GetInviteController } from '../controllers/invites/get-invite-controller'
 import { auth } from '../middlewares/auth'
 
 const createInviteController = new CreateInviteController()
+const getInviteController = new GetInviteController()
 
 export async function invitesRoutes(app: FastifyInstance) {
   app
@@ -48,4 +50,45 @@ export async function invitesRoutes(app: FastifyInstance) {
       },
       createInviteController.handle,
     )
+  app.withTypeProvider<ZodTypeProvider>().get(
+    '/invites/:id',
+    {
+      schema: {
+        tags: ['Invites'],
+        summary: 'Get an invite',
+        params: z.object({
+          id: z.string().uuid(),
+        }),
+        response: {
+          200: z.object({
+            invite: z.object({
+              id: z.string().uuid(),
+              email: z.string().email(),
+              role: roleSchema,
+              createdAt: z.date(),
+              author: z
+                .object({
+                  id: z.string(),
+                  name: z.string().nullable(),
+                  avatarUrl: z.string().nullable(),
+                })
+                .nullable(),
+              organization: z.object({
+                id: z.string(),
+                name: z.string(),
+                avatarUrl: z.string().nullable(),
+              }),
+            }),
+          }),
+          404: z.object({
+            message: z.string(),
+          }),
+          409: z.object({
+            message: z.string(),
+          }),
+        },
+      },
+    },
+    getInviteController.handle,
+  )
 }

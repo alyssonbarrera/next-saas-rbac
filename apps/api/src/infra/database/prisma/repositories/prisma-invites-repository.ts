@@ -14,6 +14,26 @@ export class PrismaInvitesRepository implements InvitesRepository {
 
   async findById(id: string) {
     const invite = await prisma.invite.findUnique({
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+      },
       where: {
         id,
       },
