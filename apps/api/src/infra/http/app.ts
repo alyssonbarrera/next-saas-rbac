@@ -13,6 +13,7 @@ import {
 
 import { errorHandler } from './error-handler'
 import { accountsRoutes } from './routes/accounts-routes'
+import { invitesRoutes } from './routes/invites-routes'
 import { membersRoutes } from './routes/members-routes'
 import { organizationsRoutes } from './routes/organizations-routes'
 import { projectsRoutes } from './routes/projects-routes'
@@ -59,3 +60,4 @@ app.register(accountsRoutes)
 app.register(organizationsRoutes)
 app.register(projectsRoutes)
 app.register(membersRoutes)
+app.register(invitesRoutes)

@@ -39,6 +39,11 @@ export abstract class MembersRepository {
     organizationId: string,
   ): Promise<MemberWithUser[]>
 
+  abstract findByEmailAndOrganization(
+    email: string,
+    organizationId: string,
+  ): Promise<Member | null>
+
   abstract updateRoleByOrganizationAndUser(
     data: UpdateRoleByOrganizationAndUserDTO,
   ): Promise<Member>

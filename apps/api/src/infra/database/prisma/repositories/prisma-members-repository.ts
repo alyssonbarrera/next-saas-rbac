@@ -89,6 +89,19 @@ export class PrismaMembersRepository implements MembersRepository {
     return member
   }
 
+  async findByEmailAndOrganization(email: string, organizationId: string) {
+    const member = await prisma.member.findFirst({
+      where: {
+        organizationId,
+        user: {
+          email,
+        },
+      },
+    })
+
+    return member
+  }
+
   async updateRoleByOrganizationAndUser({
     role,
     userId,
