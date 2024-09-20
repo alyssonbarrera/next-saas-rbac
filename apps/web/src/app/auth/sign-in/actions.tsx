@@ -5,10 +5,7 @@ import { HTTPError } from 'ky'
 import { signInWithEmailAndPasswordRequest } from '@/http/requests/accounts/sign-in-with-email-and-password-request'
 import { signInSchema } from '@/validations/schemas/sign-in-schema'
 
-export async function signInWithEmailAndPassword(
-  _previousState: unknown,
-  data: FormData,
-) {
+export async function signInWithEmailAndPassword(data: FormData) {
   const result = signInSchema.safeParse(Object.fromEntries(data))
 
   if (!result.success) {
