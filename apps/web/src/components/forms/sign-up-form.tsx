@@ -4,7 +4,7 @@ import { AlertTriangle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-import { FieldErrorMessage } from '@/components/field-error-message'
+import { signUpWithEmailAndPassword } from '@/app/auth/sign-up/actions'
 import { GithubButton } from '@/components/github-button'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -13,14 +13,14 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { useFormState } from '@/hooks/use-form-state'
 
-import { signInWithEmailAndPassword } from './actions'
+import { FieldErrorMessage } from '../field-error-message'
 
-export function SignInForm() {
+export function SignUpForm() {
   const router = useRouter()
 
   const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
-    signInWithEmailAndPassword,
-    () => router.push('/'),
+    signUpWithEmailAndPassword,
+    () => router.push('/auth/sign-in'),
   )
 
   return (
@@ -29,13 +29,22 @@ export function SignInForm() {
         {!success && message && (
           <Alert variant="destructive">
             <AlertTriangle className="size-4" />
-            <AlertTitle>Sign In Failed</AlertTitle>
+            <AlertTitle>Sign Up Failed</AlertTitle>
 
             <AlertDescription>
               <p>{message}</p>
             </AlertDescription>
           </Alert>
         )}
+
+        <div className="space-y-1">
+          <Label>Name</Label>
+          <Input name="name" type="text" id="name" />
+
+          {errors?.name && (
+            <FieldErrorMessage>{errors.name[0]}</FieldErrorMessage>
+          )}
+        </div>
 
         <div className="space-y-1">
           <Label>E-mail</Label>
@@ -53,20 +62,28 @@ export function SignInForm() {
           {errors?.password && (
             <FieldErrorMessage>{errors.password[0]}</FieldErrorMessage>
           )}
+        </div>
 
-          <Link
-            href="/auth/forgot-password"
-            className="text-xs font-medium text-foreground hover:underline"
-          >
-            Forgot your password?
-          </Link>
+        <div className="space-y-1">
+          <Label>Confirm your password</Label>
+          <Input
+            name="password_confirmation"
+            type="password"
+            id="password_confirmation"
+          />
+
+          {errors?.password_confirmation && (
+            <FieldErrorMessage>
+              {errors.password_confirmation[0]}
+            </FieldErrorMessage>
+          )}
         </div>
 
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? (
             <Loader2 className="size-4 animate-spin" />
           ) : (
-            'Sign in with e-mail'
+            'Create account'
           )}
         </Button>
 
@@ -77,13 +94,13 @@ export function SignInForm() {
           asChild
           size="sm"
         >
-          <Link href="/auth/sign-up">Create new account</Link>
+          <Link href="/auth/sign-in">Already registered? Sign in</Link>
         </Button>
       </form>
 
       <Separator />
 
-      <GithubButton title="Sign in with GitHub" />
+      <GithubButton title="Sign up with GitHub" disabled={isPending} />
     </div>
   )
 }

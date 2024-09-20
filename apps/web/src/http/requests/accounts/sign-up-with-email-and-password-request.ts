@@ -9,12 +9,14 @@ type SignUpWithEmailAndPasswordRequestParams = {
 type SignUpWithEmailAndPasswordRequestResponse = void
 
 export async function signUpWithEmailAndPasswordRequest({
+  name,
   email,
   password,
 }: SignUpWithEmailAndPasswordRequestParams): Promise<SignUpWithEmailAndPasswordRequestResponse> {
   await api
     .post('users', {
       json: {
+        name,
         email,
         password,
       },
