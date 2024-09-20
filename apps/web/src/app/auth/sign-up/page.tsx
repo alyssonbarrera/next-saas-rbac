@@ -22,14 +22,14 @@ export default function SignUpPage() {
 
       <div className="space-y-1">
         <Label>Password</Label>
-        <Input name="passaword" type="passaword" id="passaword" />
+        <Input name="password" type="password" id="password" />
       </div>
 
       <div className="space-y-1">
         <Label>Confirm your password</Label>
         <Input
           name="password_confirmation"
-          type="passaword"
+          type="password"
           id="password_confirmation"
         />
       </div>
