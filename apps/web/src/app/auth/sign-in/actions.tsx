@@ -1,6 +1,7 @@
 'use server'
 
 import { HTTPError } from 'ky'
+import { cookies } from 'next/headers'
 
 import { signInWithEmailAndPasswordRequest } from '@/http/requests/accounts/sign-in-with-email-and-password-request'
 import { signInSchema } from '@/validations/schemas/sign-in-schema'
@@ -21,12 +22,15 @@ export async function signInWithEmailAndPassword(data: FormData) {
   const { email, password } = result.data
 
   try {
-    const response = await signInWithEmailAndPasswordRequest({
+    const { token } = await signInWithEmailAndPasswordRequest({
       email,
       password,
     })
 
-    console.log(response)
+    cookies().set('token', token, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    })
   } catch (error) {
     if (error instanceof HTTPError) {
       const { message } = await error.response.json()

@@ -3,6 +3,7 @@
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 import githubIcon from '@/assets/github-icon.svg'
 import { FieldErrorMessage } from '@/components/field-error-message'
@@ -16,13 +17,11 @@ import { useFormState } from '@/hooks/use-form-state'
 import { signInWithEmailAndPassword } from './actions'
 
 export function SignInForm() {
+  const router = useRouter()
+
   const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
     signInWithEmailAndPassword,
-    {
-      success: false,
-      message: null,
-      errors: null,
-    },
+    () => router.push('/'),
   )
 
   return (
