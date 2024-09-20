@@ -1,12 +1,13 @@
 {
-  "name": "web",
+  "name": "@saas/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "pnpm env:load next dev --turbo",
+    "build": "pnpm env:load next build",
+    "start": "pnpm env:load next start",
+    "lint": "next lint",
+    "env:load": "dotenv -e ../../.env --"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.0",
@@ -14,6 +15,8 @@
     "@radix-ui/react-slot": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cookies-next": "^4.2.1",
+    "dotenv-cli": "^7.4.2",
     "ky": "^1.7.2",
     "lucide-react": "^0.441.0",
     "next": "15.0.0-rc.0",
@@ -21,7 +24,8 @@
     "react-dom": "19.0.0-rc-f994737d14-20240522",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@saas/env": "workspace:*"
   },
   "devDependencies": {
     "@saas/eslint-config": "workspace:*",

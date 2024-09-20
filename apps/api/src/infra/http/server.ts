@@ -4,7 +4,7 @@ import { app } from './app'
 
 app
   .listen({
-    port: env.PORT,
+    port: env.SERVER_PORT,
     host: '::',
   })
   .then(() => {
