@@ -3,20 +3,33 @@ import { NextRequest, NextResponse } from 'next/server'
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
 
+  const { pathname } = request.nextUrl
+  const pathnameStartsWithOrg = pathname.startsWith('/org')
+
+  const response = NextResponse.next()
+
+  if (pathnameStartsWithOrg) {
+    const [, , slug] = pathname.split('/')
+
+    response.cookies.set('org', slug)
+  } else {
+    response.cookies.delete('org')
+  }
+
   const authURL = new URL('/auth/sign-in', request.url)
   const homeURL = new URL('/', request.url)
 
   const authPaths = ['/auth/sign-in', '/auth/sign-up', '/auth/forgot-password']
 
-  if (!token && !authPaths.includes(request.nextUrl.pathname)) {
+  if (!token && !authPaths.includes(pathname)) {
     return NextResponse.redirect(authURL)
   }
 
-  if (token && authPaths.includes(request.nextUrl.pathname)) {
+  if (token && authPaths.includes(pathname)) {
     return NextResponse.redirect(homeURL)
   }
 
-  return NextResponse.next()
+  return response
 }
 
 export const config = {
