@@ -15,6 +15,7 @@ export class GetMembershipController {
       membership: {
         id: membership.id,
         role: membership.role,
+        userId: membership.userId,
         organizationId: membership.organizationId,
       },
     })
