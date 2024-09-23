@@ -8,16 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-
-function getInitials(name: string): string {
-  const initials = name
-    .split(' ')
-    .map((word) => word.charAt(0).toUpperCase())
-    .slice(0, 2)
-    .join('')
-
-  return initials
-}
+import { getInitials } from '@/utils/get-initials'
 
 export async function ProfileButton() {
   const { user } = await auth()
