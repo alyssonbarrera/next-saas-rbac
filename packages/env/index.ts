@@ -12,10 +12,8 @@ export const env = createEnv({
     GITHUB_CLIENT_SECRET: z.string(),
     GITHUB_REDIRECT_URI: z.string(),
   },
-  client: {
-    NEXT_PUBLIC_API_URL: z.string(),
-  },
-  shared: {},
+  client: {},
+  shared: { NEXT_PUBLIC_API_URL: z.string() },
   runtimeEnv: {
     SERVER_PORT: process.env.SERVER_PORT,
     JWT_SECRET: process.env.JWT_SECRET,
