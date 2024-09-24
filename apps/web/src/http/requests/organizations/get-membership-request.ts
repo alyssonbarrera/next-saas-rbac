@@ -2,13 +2,15 @@ import { Role } from '@saas/auth'
 
 import { api } from '../../api-client'
 
+export type Membership = {
+  id: string
+  role: Role
+  userId: string
+  organizationId: string
+}
+
 type GetMembershipRequestResponse = {
-  membership: {
-    id: string
-    role: Role
-    userId: string
-    organizationId: string
-  }
+  membership: Membership
 }
 
 export async function getMembershipRequest(
