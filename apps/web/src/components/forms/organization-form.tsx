@@ -3,19 +3,32 @@
 import { AlertTriangle, CheckCircle, Loader2 } from 'lucide-react'
 
 import { createOrganizationAction } from '@/app/(app)/create-organization/actions'
+import { updateOrganizationAction } from '@/app/(app)/org/[slug]/settings/actions'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useFormState } from '@/hooks/use-form-state'
+import { OrganizationSchema } from '@/validations/schemas/organization-schema'
 
 import { FieldErrorMessage } from '../field-error-message'
 import { Checkbox } from '../ui/checkbox'
 
-export function OrganizationForm() {
-  const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
-    createOrganizationAction,
-  )
+type OrganizationFormProps = {
+  isUpdating?: boolean
+  initialData?: OrganizationSchema
+}
+
+export function OrganizationForm({
+  isUpdating = false,
+  initialData,
+}: OrganizationFormProps) {
+  const formAction = isUpdating
+    ? updateOrganizationAction
+    : createOrganizationAction
+
+  const [{ success, message, errors }, handleSubmit, isPending] =
+    useFormState(formAction)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -43,7 +56,12 @@ export function OrganizationForm() {
 
       <div className="space-y-1">
         <Label htmlFor="name">Organization name</Label>
-        <Input name="name" type="text" id="name" />
+        <Input
+          name="name"
+          type="text"
+          id="name"
+          defaultValue={initialData?.name}
+        />
 
         {errors?.name && (
           <FieldErrorMessage>{errors.name[0]}</FieldErrorMessage>
@@ -58,6 +76,7 @@ export function OrganizationForm() {
           id="domain"
           inputMode="url"
           placeholder="example.com"
+          defaultValue={initialData?.domain ?? undefined}
         />
 
         {errors?.domain && (
@@ -70,6 +89,7 @@ export function OrganizationForm() {
           id="shouldAttachUsersByDomain"
           name="shouldAttachUsersByDomain"
           className="mt-1"
+          defaultChecked={initialData?.shouldAttachUsersByDomain}
         />
 
         <label htmlFor="shouldAttachUsersByDomain" className="space-y-1">

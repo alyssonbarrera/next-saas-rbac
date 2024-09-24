@@ -3,10 +3,11 @@
 import { HTTPError } from 'ky'
 import { revalidateTag } from 'next/cache'
 
-import { createOrganizationRequest } from '@/http/requests/organizations/create-organization-request'
+import { getCurrentOrg } from '@/auth'
+import { updateOrganizationRequest } from '@/http/requests/organizations/update-organization-request'
 import { organizationSchema } from '@/validations/schemas/organization-schema'
 
-export async function createOrganizationAction(data: FormData) {
+export async function updateOrganizationAction(data: FormData) {
   const result = organizationSchema.safeParse(Object.fromEntries(data))
 
   if (!result.success) {
@@ -22,10 +23,11 @@ export async function createOrganizationAction(data: FormData) {
   const { name, domain, shouldAttachUsersByDomain } = result.data
 
   try {
-    await createOrganizationRequest({
+    await updateOrganizationRequest({
       name,
       domain,
       shouldAttachUsersByDomain,
+      organizationSlug: getCurrentOrg()!,
     })
 
     revalidateTag('organizations')

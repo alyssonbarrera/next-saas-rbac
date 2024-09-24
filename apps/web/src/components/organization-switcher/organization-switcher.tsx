@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Fragment } from 'react'
 
 import { getCurrentOrg } from '@/auth'
-import { getOrganizationsRequest } from '@/http/requests/organizations/get-organization-request'
+import { getOrganizationsRequest } from '@/http/requests/organizations/get-organizations-request'
 
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import {

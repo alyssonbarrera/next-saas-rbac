@@ -1,26 +1,23 @@
-import { Role } from '@saas/auth'
-
 import { api } from '../../api-client'
 
-type GetOrganizationsRequestResponse = {
-  organizations: {
+type GetOrganizationRequestResponse = {
+  organization: {
     id: string
     name: string
     slug: string
-    role: Role
+    ownerId: string
     domain: string | null
     avatarUrl: string | null
-  }[]
+    shouldAttachUsersByDomain: boolean
+  }
 }
 
-export async function getOrganizationsRequest(): Promise<GetOrganizationsRequestResponse> {
+export async function getOrganizationRequest(
+  organizationSlug: string,
+): Promise<GetOrganizationRequestResponse> {
   const result = await api
-    .get('organizations', {
-      next: {
-        tags: ['organizations'],
-      },
-    })
-    .json<GetOrganizationsRequestResponse>()
+    .get(`organizations/${organizationSlug}`)
+    .json<GetOrganizationRequestResponse>()
 
   return result
 }

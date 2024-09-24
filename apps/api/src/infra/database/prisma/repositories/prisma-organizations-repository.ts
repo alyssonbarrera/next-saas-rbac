@@ -81,6 +81,9 @@ export class PrismaOrganizationsRepository implements OrganizationsRepository {
           },
         },
       },
+      orderBy: {
+        name: 'asc',
+      },
     })
 
     return organizations
