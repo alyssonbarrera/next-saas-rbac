@@ -11,6 +11,7 @@ import { RemoveMemberButton } from '../remove-member-button'
 import { Avatar, AvatarFallback } from '../ui/avatar'
 import { Button } from '../ui/button'
 import { Table, TableBody, TableCell, TableRow } from '../ui/table'
+import { UpdateMemberRoleSelect } from '../update-member-role-select'
 
 export async function MemberList() {
   const permissions = await ability()
@@ -81,6 +82,18 @@ export async function MemberList() {
                         <ArrowLeftRight className="mr-2 size-4" />
                         Transfer ownership
                       </Button>
+                    )}
+
+                    {permissions?.can('update', 'User') && (
+                      <UpdateMemberRoleSelect
+                        memberId={member.id}
+                        value={member.role}
+                        disabled={
+                          member.userId === membership.userId ||
+                          organization.ownerId === member.userId ||
+                          permissions?.cannot('update', 'User')
+                        }
+                      />
                     )}
 
                     {permissions?.can('delete', 'User') && (
