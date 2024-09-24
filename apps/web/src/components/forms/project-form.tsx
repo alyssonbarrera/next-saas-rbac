@@ -1,6 +1,5 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle, CheckCircle, Loader2 } from 'lucide-react'
 import { useParams } from 'next/navigation'
 
@@ -10,21 +9,20 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useFormState } from '@/hooks/use-form-state'
+import { queryClient } from '@/lib/react-query'
 
 import { FieldErrorMessage } from '../field-error-message'
 import { Textarea } from '../ui/textarea'
 
 export function ProjectForm() {
-  const queryClient = useQueryClient()
-
   const { slug: organizationSlug } = useParams<{
     slug: string
   }>()
 
   const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
     createProjectAction,
-    async () => {
-      await queryClient.invalidateQueries({
+    () => {
+      queryClient.invalidateQueries({
         queryKey: [organizationSlug, 'projects'],
       })
     },

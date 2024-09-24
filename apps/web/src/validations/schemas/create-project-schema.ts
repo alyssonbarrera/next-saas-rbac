@@ -8,7 +8,5 @@ export const createProjectSchema = z.object({
     .min(4, {
       message: 'Please, include at least 4 characters.',
     }),
-  description: z.string().min(4, {
-    message: 'Please, include at least 4 characters.',
-  }),
+  description: z.string().optional(),
 })
