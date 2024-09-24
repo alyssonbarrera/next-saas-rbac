@@ -1,12 +1,14 @@
 import { Slash } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Fragment } from 'react'
 
 import rocketseatIcon from '@/assets/rocketseat-icon.svg'
 import { ability } from '@/auth'
 
 import { OrganizationSwitcher } from '../organization-switcher'
 import { ProfileButton } from '../profile-button'
+import { ProjectSwitcher } from '../project-switcher'
 import { ThemeSwitcher } from '../theme'
 import { Separator } from '../ui/separator'
 
@@ -28,7 +30,12 @@ export async function Header() {
 
         <OrganizationSwitcher />
 
-        {permissions?.can('get', 'Project') && <p>Projetos</p>}
+        {permissions?.can('get', 'Project') && (
+          <Fragment>
+            <Slash className="size-3 -rotate-[24deg] text-border" />
+            <ProjectSwitcher />
+          </Fragment>
+        )}
       </div>
       <div className="flex items-center gap-4">
         <ThemeSwitcher />
