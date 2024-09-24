@@ -1,4 +1,5 @@
 import { ability, getCurrentOrg } from '@/auth'
+import { Billing } from '@/components/billing'
 import { OrganizationForm } from '@/components/forms/organization-form'
 import { ShutdownOrganizationButton } from '@/components/shutdown-organization-button'
 import {
@@ -56,7 +57,7 @@ export default async function Settings() {
             </CardHeader>
 
             <CardContent>
-              <p>Coming soon...</p>
+              <Billing />
             </CardContent>
           </Card>
         )}
