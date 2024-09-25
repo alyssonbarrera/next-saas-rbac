@@ -82,3 +82,17 @@ Roles & permissions.
 - Only owners may transfer organization ownership;
 - Only administrators and project authors may update/delete the project;
 - Members can leave their own organization.
+
+## Screenshots
+
+<div align="center">
+    <div>
+        <img width="100%" src="./assets/print-1.png" />
+        <img width="100%" src="./assets/print-2.png" />
+        <img width="100%" src="./assets/print-3.png" />
+        <img width="100%" src="./assets/print-4.png" />
+        <img width="100%" src="./assets/print-5.png" />
+        <img width="100%" src="./assets/print-6.png" />
+        <img width="100%" src="./assets/print-7.png" />
+    </div>
+</div>
