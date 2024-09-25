@@ -1,6 +1,10 @@
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { Check, UserCircle, UserPlus2, X } from 'lucide-react'
+import { UserPlus2 } from 'lucide-react'
+import { Fragment, useState } from 'react'
 
 import {
   Popover,
@@ -9,68 +13,59 @@ import {
 } from '@/components/ui/popover'
 import { getPendingInvitesRequest } from '@/http/requests/invites/get-pending-invites-request'
 
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Button } from '../ui/button'
+import { Skeleton } from '../ui/skeleton'
+import { PendingInviteCard } from './pending-invite-card'
 
 dayjs.extend(relativeTime)
 
-export async function PendingInvites() {
-  const { invites } = await getPendingInvitesRequest()
+export function PendingInvites() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['pending-invites'],
+    queryFn: getPendingInvitesRequest,
+    enabled: isOpen,
+  })
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button size="icon" variant="ghost">
           <UserPlus2 className="size-4" />
           <span className="sr-only">Pending invites</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
+      <PopoverContent className="w-80 space-y-2">
+        {isLoading && (
+          <Fragment>
+            <div className="flex items-center gap-2">
+              <Skeleton className="size-6 rounded-full" />
+              <Skeleton className="h-4 w-full rounded" />
+            </div>
+
+            <Skeleton className="ml-8 h-4 rounded" style={{ width: '50%' }} />
+
+            <div className="ml-8 flex items-center gap-1">
+              <Skeleton className="mt-1 h-4 rounded" style={{ width: 60 }} />
+              <Skeleton className="mt-1 h-4 rounded" style={{ width: 60 }} />
+            </div>
+          </Fragment>
+        )}
+
         <span className="block text-sm font-medium">
-          Pending invites ({invites.length})
+          Pending invites ({data?.invites.length ?? 0})
         </span>
 
+        {data?.invites.length === 0 && (
+          <p className="text-sm text-muted-foreground ">No invites found.</p>
+        )}
+
         <div className="space-y-2">
-          {invites.map((invite) => (
-            <div key={invite.id} className="space-y-1">
-              <div className="flex items-center space-y-4">
-                {invite.author && invite.author.avatarUrl ? (
-                  <Avatar className="mr-2 size-6">
-                    <AvatarFallback />
-                    <AvatarImage src={invite.author.avatarUrl} />
-                  </Avatar>
-                ) : (
-                  <UserCircle className="size-4" />
-                )}
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  <span className="font-medium text-foreground">
-                    {invite.author?.name ?? 'Someone'}
-                  </span>{' '}
-                  invited you to join{' '}
-                  <span className="font-medium text-foreground">
-                    {invite.organization.name}
-                  </span>{' '}
-                  <span>{dayjs(invite.createdAt).fromNow()}</span>
-                </p>
-              </div>
-
-              <div className="ml-8 flex gap-1">
-                <Button size="xs" variant="outline">
-                  <Check className="mr-1.5 size-3" />
-                  Accept
-                </Button>
-
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  className="text-muted-foreground"
-                >
-                  <X className="mr-1.5 size-3" />
-                  Reject
-                </Button>
-              </div>
-            </div>
-          ))}
+          {data &&
+            data.invites.map((invite) => (
+              <PendingInviteCard key={invite.id} invite={invite} />
+            ))}
         </div>
       </PopoverContent>
     </Popover>
