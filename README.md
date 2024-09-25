@@ -96,3 +96,7 @@ Roles & permissions.
         <img width="100%" src="./assets/print-7.png" />
     </div>
 </div>
+
+## Video
+
+https://github.com/user-attachments/assets/db1b600d-e86c-46fc-8d21-243f069691f0
