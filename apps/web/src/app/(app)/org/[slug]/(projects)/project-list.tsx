@@ -45,7 +45,7 @@ export async function ProjectList() {
 
             <span className="truncate text-xs text-muted-foreground">
               <span className="font-medium text-foreground">
-                {project.owner.name || 'Unknown'}
+                {project.owner.name ?? 'Someone'}
               </span>{' '}
               {dayjs(project.createdAt).fromNow()}
             </span>

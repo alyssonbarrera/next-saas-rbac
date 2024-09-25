@@ -19,7 +19,16 @@ export function middleware(request: NextRequest) {
   const authURL = new URL('/auth/sign-in', request.url)
   const homeURL = new URL('/', request.url)
 
+  const publicPaths = ['/invite/*']
   const authPaths = ['/auth/sign-in', '/auth/sign-up', '/auth/forgot-password']
+
+  const publicPathRegexes = publicPaths.map(
+    (path) => new RegExp(`^${path.replace('*', '.*')}$`),
+  )
+
+  if (publicPathRegexes.some((regex) => regex.test(pathname))) {
+    return response
+  }
 
   if (!token && !authPaths.includes(pathname)) {
     return NextResponse.redirect(authURL)
