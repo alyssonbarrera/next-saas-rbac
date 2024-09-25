@@ -1,8 +1,10 @@
 'use server'
 
 import { HTTPError } from 'ky'
+import { cookies } from 'next/headers'
 
 import { signUpWithEmailAndPasswordRequest } from '@/http/requests/accounts/sign-up-with-email-and-password-request'
+import { acceptInviteRequest } from '@/http/requests/invites/accept-invite-request'
 import { signUpSchema } from '@/validations/schemas/sign-up-schema'
 
 export async function signUpWithEmailAndPassword(data: FormData) {
@@ -26,6 +28,15 @@ export async function signUpWithEmailAndPassword(data: FormData) {
       email,
       password,
     })
+
+    const inviteId = cookies().get('inviteId')?.value
+
+    if (inviteId) {
+      try {
+        await acceptInviteRequest({ inviteId })
+        cookies().delete('inviteId')
+      } catch {}
+    }
   } catch (error) {
     if (error instanceof HTTPError) {
       const { message } = await error.response.json()

@@ -84,17 +84,15 @@ export async function MemberList() {
                       </Button>
                     )}
 
-                    {permissions?.can('update', 'User') && (
-                      <UpdateMemberRoleSelect
-                        memberId={member.id}
-                        value={member.role}
-                        disabled={
-                          member.userId === membership.userId ||
-                          organization.ownerId === member.userId ||
-                          permissions?.cannot('update', 'User')
-                        }
-                      />
-                    )}
+                    <UpdateMemberRoleSelect
+                      memberId={member.id}
+                      value={member.role}
+                      disabled={
+                        member.userId === membership.userId ||
+                        organization.ownerId === member.userId ||
+                        permissions?.cannot('update', 'User')
+                      }
+                    />
 
                     {permissions?.can('delete', 'User') && (
                       <RemoveMemberButton

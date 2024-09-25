@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import { FieldErrorMessage } from '@/components/field-error-message'
 import { GithubButton } from '@/components/github-button'
@@ -17,6 +17,7 @@ import { signInWithEmailAndPassword } from '../../app/auth/sign-in/actions'
 
 export function SignInForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
     signInWithEmailAndPassword,
@@ -39,7 +40,12 @@ export function SignInForm() {
 
         <div className="space-y-1">
           <Label>E-mail</Label>
-          <Input name="email" type="email" id="email" />
+          <Input
+            name="email"
+            type="email"
+            id="email"
+            defaultValue={searchParams.get('email') ?? ''}
+          />
 
           {errors?.email && (
             <FieldErrorMessage>{errors.email[0]}</FieldErrorMessage>

@@ -4,6 +4,7 @@ import { HTTPError } from 'ky'
 import { cookies } from 'next/headers'
 
 import { signInWithEmailAndPasswordRequest } from '@/http/requests/accounts/sign-in-with-email-and-password-request'
+import { acceptInviteRequest } from '@/http/requests/invites/accept-invite-request'
 import { signInSchema } from '@/validations/schemas/sign-in-schema'
 
 export async function signInWithEmailAndPassword(data: FormData) {
@@ -31,6 +32,15 @@ export async function signInWithEmailAndPassword(data: FormData) {
       path: '/',
       maxAge: 60 * 60 * 24 * 7, // 7 days
     })
+
+    const inviteId = cookies().get('inviteId')?.value
+
+    if (inviteId) {
+      try {
+        await acceptInviteRequest({ inviteId })
+        cookies().delete('inviteId')
+      } catch {}
+    }
   } catch (error) {
     if (error instanceof HTTPError) {
       const { message } = await error.response.json()
