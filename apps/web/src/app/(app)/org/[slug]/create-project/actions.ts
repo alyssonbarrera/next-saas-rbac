@@ -1,12 +1,15 @@
 'use server'
 
 import { HTTPError } from 'ky'
+import { revalidateTag } from 'next/cache'
 
 import { getCurrentOrg } from '@/auth'
 import { createProjectRequest } from '@/http/requests/projects/create-project-request'
 import { createProjectSchema } from '@/validations/schemas/create-project-schema'
 
 export async function createProjectAction(data: FormData) {
+  const currentOrganization = getCurrentOrg()
+
   const result = createProjectSchema.safeParse(Object.fromEntries(data))
 
   if (!result.success) {
@@ -25,8 +28,10 @@ export async function createProjectAction(data: FormData) {
     await createProjectRequest({
       name,
       description,
-      organizationSlug: getCurrentOrg()!,
+      organizationSlug: currentOrganization!,
     })
+
+    revalidateTag(`${currentOrganization}/projects`)
   } catch (error) {
     if (error instanceof HTTPError) {
       const { message } = await error.response.json()
