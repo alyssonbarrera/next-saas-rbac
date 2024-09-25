@@ -5,6 +5,8 @@ export function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
   const pathnameStartsWithOrg = pathname.startsWith('/org')
+  const projectPathRegex = /\/org\/.+\/project\/.+/
+  const pathnameIncludesProject = projectPathRegex.test(pathname)
 
   const response = NextResponse.next()
 
@@ -14,6 +16,14 @@ export function middleware(request: NextRequest) {
     response.cookies.set('org', slug)
   } else {
     response.cookies.delete('org')
+  }
+
+  if (pathnameIncludesProject) {
+    const [, , , , projectSlug] = pathname.split('/')
+
+    response.cookies.set('project', projectSlug)
+  } else {
+    response.cookies.delete('project')
   }
 
   const authURL = new URL('/auth/sign-in', request.url)

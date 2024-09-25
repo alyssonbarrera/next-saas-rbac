@@ -9,6 +9,7 @@ import { createInviteRequest } from '@/http/requests/invites/create-invite-reque
 import { revokeInviteRequest } from '@/http/requests/invites/revoke-invite-request'
 import { removeMemberRequest } from '@/http/requests/members/remove-member-request'
 import { updateMemberRequest } from '@/http/requests/members/update-member-request'
+import { transferOwnershipRequest } from '@/http/requests/organizations/transfer-ownership-request'
 import { createInviteSchema } from '@/validations/schemas/create-invite-schema'
 
 export async function removeMemberAction(memberId: string) {
@@ -93,6 +94,43 @@ export async function createInviteAction(data: FormData) {
   return {
     success: true,
     message: 'Successfully created the invite.',
+    errors: null,
+  }
+}
+
+export async function transferOwnershipAction(transferToUserId: string) {
+  const currentOrganization = getCurrentOrg()
+
+  try {
+    await transferOwnershipRequest({
+      organizationSlug: currentOrganization!,
+      transferToUserId,
+    })
+
+    revalidateTag(`${currentOrganization}/members`)
+  } catch (error) {
+    if (error instanceof HTTPError) {
+      const { message } = await error.response.json()
+
+      return {
+        success: false,
+        message,
+        errors: null,
+      }
+    }
+
+    console.error(error)
+
+    return {
+      success: false,
+      message: 'Unexpected error, try again in a few minutes.',
+      errors: null,
+    }
+  }
+
+  return {
+    success: true,
+    message: 'Successfully transferred the ownership.',
     errors: null,
   }
 }

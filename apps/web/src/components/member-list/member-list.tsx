@@ -1,5 +1,5 @@
 import { organizationSchema } from '@saas/auth'
-import { ArrowLeftRight, Crown } from 'lucide-react'
+import { Crown } from 'lucide-react'
 import Image from 'next/image'
 
 import { ability, getCurrentOrg } from '@/auth'
@@ -8,8 +8,8 @@ import { getMembershipRequest } from '@/http/requests/organizations/get-membersh
 import { getOrganizationRequest } from '@/http/requests/organizations/get-organization-request'
 
 import { RemoveMemberButton } from '../remove-member-button'
+import { TransferOwnershipButton } from '../transfer-ownership-button'
 import { Avatar, AvatarFallback } from '../ui/avatar'
-import { Button } from '../ui/button'
 import { Table, TableBody, TableCell, TableRow } from '../ui/table'
 import { UpdateMemberRoleSelect } from '../update-member-role-select'
 
@@ -78,10 +78,10 @@ export async function MemberList() {
                       'transfer_ownership',
                       authOrganization,
                     ) && (
-                      <Button size="sm" variant="ghost">
-                        <ArrowLeftRight className="mr-2 size-4" />
-                        Transfer ownership
-                      </Button>
+                      <TransferOwnershipButton
+                        member={member}
+                        disabled={organization.ownerId === member.userId}
+                      />
                     )}
 
                     <UpdateMemberRoleSelect

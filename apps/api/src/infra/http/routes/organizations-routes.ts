@@ -224,7 +224,17 @@ export async function organizationsRoutes(app: FastifyInstance) {
             transferToUserId: z.string().uuid(),
           }),
           response: {
-            200: z.null(),
+            200: z.object({
+              organization: z.object({
+                id: z.string().uuid(),
+                name: z.string(),
+                slug: z.string(),
+                ownerId: z.string().uuid(),
+                domain: z.string().nullable(),
+                avatarUrl: z.string().url().nullable(),
+                shouldAttachUsersByDomain: z.boolean(),
+              }),
+            }),
             403: z.object({
               message: z.string(),
             }),

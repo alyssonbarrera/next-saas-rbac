@@ -10,3 +10,5 @@ export const createProjectSchema = z.object({
     }),
   description: z.string().optional(),
 })
+
+export type ProjectSchema = z.infer<typeof createProjectSchema>

@@ -4,23 +4,35 @@ import { AlertTriangle, CheckCircle, Loader2 } from 'lucide-react'
 import { useParams } from 'next/navigation'
 
 import { createProjectAction } from '@/app/(app)/org/[slug]/create-project/actions'
+import { updateProjectAction } from '@/app/(app)/org/[slug]/project/[project]/actions'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useFormState } from '@/hooks/use-form-state'
 import { queryClient } from '@/lib/react-query'
+import { ProjectSchema } from '@/validations/schemas/create-project-schema'
 
 import { FieldErrorMessage } from '../field-error-message'
 import { Textarea } from '../ui/textarea'
 
-export function ProjectForm() {
+type ProjectFormProps = {
+  isUpdating?: boolean
+  initialData?: ProjectSchema
+}
+
+export function ProjectForm({
+  isUpdating = false,
+  initialData,
+}: ProjectFormProps) {
+  const formAction = isUpdating ? updateProjectAction : createProjectAction
+
   const { slug: organizationSlug } = useParams<{
     slug: string
   }>()
 
   const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
-    createProjectAction,
+    formAction,
     () => {
       queryClient.invalidateQueries({
         queryKey: [organizationSlug, 'projects'],
@@ -54,7 +66,12 @@ export function ProjectForm() {
 
       <div className="space-y-1">
         <Label htmlFor="name">Project name</Label>
-        <Input name="name" type="text" id="name" />
+        <Input
+          name="name"
+          type="text"
+          id="name"
+          defaultValue={initialData?.name}
+        />
 
         {errors?.name && (
           <FieldErrorMessage>{errors.name[0]}</FieldErrorMessage>
@@ -63,7 +80,11 @@ export function ProjectForm() {
 
       <div className="space-y-1">
         <Label htmlFor="description">Description</Label>
-        <Textarea name="description" id="description" />
+        <Textarea
+          name="description"
+          id="description"
+          defaultValue={initialData?.description}
+        />
 
         {errors?.description && (
           <FieldErrorMessage>{errors.description[0]}</FieldErrorMessage>
