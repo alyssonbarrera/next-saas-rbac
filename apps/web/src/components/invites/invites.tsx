@@ -1,15 +1,11 @@
-import { organizationSchema } from '@saas/auth'
-import { ShieldCheck, UserCircle, UserRoundPen } from 'lucide-react'
+import { ShieldCheck, UserCircle } from 'lucide-react'
 
 import { ability, getCurrentOrg } from '@/auth'
 import { getInvitesRequest } from '@/http/requests/invites/get-invites-request'
-import { getMembersRequest } from '@/http/requests/members/get-members-request'
-import { getMembershipRequest } from '@/http/requests/organizations/get-membership-request'
-import { getOrganizationRequest } from '@/http/requests/organizations/get-organization-request'
 
+import { CreateInviteForm } from '../forms/create-invite-form'
 import { RevokeInviteButton } from '../revoke-invite-button'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Table, TableBody, TableCell, TableRow } from '../ui/table'
 
@@ -19,14 +15,6 @@ export async function Invites() {
 
   const { invites } = await getInvitesRequest(currentOrganization!)
 
-  const [{ membership }, { members }, { organization }] = await Promise.all([
-    getMembershipRequest(currentOrganization!),
-    getMembersRequest(currentOrganization!),
-    getOrganizationRequest(currentOrganization!),
-  ])
-
-  const authOrganization = organizationSchema.parse(organization)
-
   return (
     <div className="space-y-4">
       {permissions?.can('create', 'Invite') && (
@@ -35,7 +23,9 @@ export async function Invites() {
             <CardTitle>Invite member</CardTitle>
           </CardHeader>
 
-          <CardContent></CardContent>
+          <CardContent>
+            <CreateInviteForm />
+          </CardContent>
         </Card>
       )}
 

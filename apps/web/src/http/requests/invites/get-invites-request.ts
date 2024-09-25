@@ -7,7 +7,7 @@ type GetInvitesRequestResponse = {
     id: string
     email: string
     role: Role
-    createdAt: Date
+    createdAt: string
     author: {
       id: string
       name: string | null
