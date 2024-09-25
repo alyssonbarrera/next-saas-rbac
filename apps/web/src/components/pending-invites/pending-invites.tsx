@@ -37,6 +37,10 @@ export function PendingInvites() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 space-y-2">
+        <span className="block text-sm font-medium">
+          Pending invites ({data?.invites.length ?? 0})
+        </span>
+
         {isLoading && (
           <Fragment>
             <div className="flex items-center gap-2">
@@ -52,10 +56,6 @@ export function PendingInvites() {
             </div>
           </Fragment>
         )}
-
-        <span className="block text-sm font-medium">
-          Pending invites ({data?.invites.length ?? 0})
-        </span>
 
         {data?.invites.length === 0 && (
           <p className="text-sm text-muted-foreground ">No invites found.</p>
