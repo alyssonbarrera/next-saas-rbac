@@ -22,6 +22,7 @@ export async function getMembersRequest(
     .get(`organizations/${organization}/members`, {
       next: {
         tags: [`${organization}/members`],
+        revalidate: 60,
       },
     })
     .json<GetMembersRequestResponse>()

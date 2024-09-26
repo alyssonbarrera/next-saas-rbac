@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value
-
+function setOrgCookieIfPathStartsWithOrg(
+  request: NextRequest,
+  response: NextResponse,
+) {
   const { pathname } = request.nextUrl
   const pathnameStartsWithOrg = pathname.startsWith('/org')
-  const projectPathRegex = /\/org\/.+\/project\/.+/
-  const pathnameIncludesProject = projectPathRegex.test(pathname)
-
-  const response = NextResponse.next()
 
   if (pathnameStartsWithOrg) {
     const [, , slug] = pathname.split('/')
@@ -17,6 +14,15 @@ export function middleware(request: NextRequest) {
   } else {
     response.cookies.delete('org')
   }
+}
+
+function setProjectCookieIfPathStartsWithProject(
+  request: NextRequest,
+  response: NextResponse,
+) {
+  const { pathname } = request.nextUrl
+  const projectPathRegex = /\/org\/.+\/project\/.+/
+  const pathnameIncludesProject = projectPathRegex.test(pathname)
 
   if (pathnameIncludesProject) {
     const [, , , , projectSlug] = pathname.split('/')
@@ -25,6 +31,15 @@ export function middleware(request: NextRequest) {
   } else {
     response.cookies.delete('project')
   }
+}
+
+export function middleware(request: NextRequest) {
+  const response = NextResponse.next()
+  const { pathname } = request.nextUrl
+  const token = request.cookies.get('token')?.value
+
+  setOrgCookieIfPathStartsWithOrg(request, response)
+  setProjectCookieIfPathStartsWithProject(request, response)
 
   const authURL = new URL('/auth/sign-in', request.url)
   const homeURL = new URL('/', request.url)

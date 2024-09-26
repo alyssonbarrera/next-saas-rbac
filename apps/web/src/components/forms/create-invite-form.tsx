@@ -6,16 +6,10 @@ import { createInviteAction } from '@/app/(app)/org/[slug]/members/actions'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { useFormState } from '@/hooks/use-form-state'
 
 import { FieldErrorMessage } from '../field-error-message'
+import { RoleSelect } from '../role-select'
 
 export function CreateInviteForm() {
   const [{ success, message, errors }, handleSubmit, isPending] =
@@ -51,16 +45,13 @@ export function CreateInviteForm() {
         </div>
 
         <div className="space-y-1">
-          <Select name="role" defaultValue="MEMBER">
-            <SelectTrigger className="w-32">
-              <SelectValue className="capitalize" placeholder="Select role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ADMIN">Admin</SelectItem>
-              <SelectItem value="MEMBER">Member</SelectItem>
-              <SelectItem value="BILLING">Billing</SelectItem>
-            </SelectContent>
-          </Select>
+          <RoleSelect
+            name="role"
+            defaultValue="MEMBER"
+            triggerProps={{
+              className: 'w-32',
+            }}
+          />
 
           {errors && (
             <FieldErrorMessage className="invisible">

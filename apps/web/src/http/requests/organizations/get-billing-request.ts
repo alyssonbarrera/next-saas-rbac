@@ -20,7 +20,11 @@ export async function getBillingRequest(
   organization: string,
 ): Promise<GetBillingRequestResponse> {
   const result = await api
-    .get(`organizations/${organization}/billing`)
+    .get(`organizations/${organization}/billing`, {
+      next: {
+        revalidate: 60,
+      },
+    })
     .json<GetBillingRequestResponse>()
 
   return result

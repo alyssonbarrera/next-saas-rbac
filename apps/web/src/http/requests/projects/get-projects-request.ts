@@ -28,6 +28,7 @@ export async function getProjectsRequest(
     .get(`organizations/${organization}/projects`, {
       next: {
         tags: [`${organization}/projects`],
+        revalidate: 60,
       },
     })
     .json<GetProjectsRequestResponse>()

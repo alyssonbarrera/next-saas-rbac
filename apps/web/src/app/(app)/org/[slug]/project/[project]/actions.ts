@@ -1,11 +1,12 @@
 'use server'
 
-import { HTTPError } from 'ky'
 import { revalidateTag } from 'next/cache'
 import { cookies } from 'next/headers'
 
 import { getCurrentOrg } from '@/auth'
+import { deleteProjectRequest } from '@/http/requests/projects/delete-project-request'
 import { updateProjectRequest } from '@/http/requests/projects/update-project-request'
+import { executeServerActionWithHandling } from '@/utils/execute-server-action-with-handling'
 import { createProjectSchema } from '@/validations/schemas/create-project-schema'
 
 export async function updateProjectAction(data: FormData) {
@@ -27,7 +28,7 @@ export async function updateProjectAction(data: FormData) {
 
   const { name, description } = result.data
 
-  try {
+  async function executeUpdateProject() {
     await updateProjectRequest({
       name,
       description,
@@ -36,29 +37,21 @@ export async function updateProjectAction(data: FormData) {
     })
 
     revalidateTag(`${currentOrganization}/project/${projectSlug}`)
-  } catch (error) {
-    if (error instanceof HTTPError) {
-      const { message } = await error.response.json()
-
-      return {
-        success: false,
-        message,
-        errors: null,
-      }
-    }
-
-    console.error(error)
-
-    return {
-      success: false,
-      message: 'Unexpected error, try again in a few minutes.',
-      errors: null,
-    }
   }
 
-  return {
-    success: true,
-    message: 'Successfully saved the project.',
-    errors: null,
-  }
+  return await executeServerActionWithHandling({
+    action: executeUpdateProject,
+    successMessage: 'Successfully saved the project.',
+  })
+}
+
+export async function deleteProjectAction(projectId: string) {
+  const currentOrganization = getCurrentOrg()
+
+  await deleteProjectRequest({
+    projectId,
+    organizationSlug: currentOrganization!,
+  })
+
+  revalidateTag(`${currentOrganization}/projects`)
 }

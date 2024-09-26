@@ -11,12 +11,10 @@ export async function passwordResetRequest({
   email,
   code,
 }: PasswordResetRequestParams): Promise<PasswordResetRequestResponse> {
-  await api
-    .post('password/reset', {
-      json: {
-        email,
-        code,
-      },
-    })
-    .json<PasswordResetRequestResponse>()
+  await api.post('password/reset', {
+    json: {
+      email,
+      code,
+    },
+  })
 }

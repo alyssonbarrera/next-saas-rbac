@@ -1,4 +1,5 @@
 import { XCircle } from 'lucide-react'
+import { revalidateTag } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { getCurrentOrg } from '@/auth'
@@ -23,6 +24,7 @@ export function ShutdownOrganizationButton() {
     const currentOrganization = getCurrentOrg()
 
     await shutdownOrganizationRequest(currentOrganization!)
+    revalidateTag('organizations')
 
     redirect('/')
   }

@@ -18,6 +18,7 @@ export async function getOrganizationsRequest(): Promise<GetOrganizationsRequest
     .get('organizations', {
       next: {
         tags: ['organizations'],
+        revalidate: 60,
       },
     })
     .json<GetOrganizationsRequestResponse>()

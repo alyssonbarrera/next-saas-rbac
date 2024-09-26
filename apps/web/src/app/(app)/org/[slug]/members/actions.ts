@@ -1,7 +1,6 @@
 'use server'
 
 import { Role } from '@saas/auth'
-import { HTTPError } from 'ky'
 import { revalidateTag } from 'next/cache'
 
 import { getCurrentOrg } from '@/auth'
@@ -10,6 +9,7 @@ import { revokeInviteRequest } from '@/http/requests/invites/revoke-invite-reque
 import { removeMemberRequest } from '@/http/requests/members/remove-member-request'
 import { updateMemberRequest } from '@/http/requests/members/update-member-request'
 import { transferOwnershipRequest } from '@/http/requests/organizations/transfer-ownership-request'
+import { executeServerActionWithHandling } from '@/utils/execute-server-action-with-handling'
 import { createInviteSchema } from '@/validations/schemas/create-invite-schema'
 
 export async function removeMemberAction(memberId: string) {
@@ -63,7 +63,7 @@ export async function createInviteAction(data: FormData) {
 
   const { email, role } = result.data
 
-  try {
+  async function executeCreateInvite() {
     await createInviteRequest({
       email,
       role,
@@ -71,66 +71,28 @@ export async function createInviteAction(data: FormData) {
     })
 
     revalidateTag(`${currentOrganization}/invites`)
-  } catch (error) {
-    if (error instanceof HTTPError) {
-      const { message } = await error.response.json()
-
-      return {
-        success: false,
-        message,
-        errors: null,
-      }
-    }
-
-    console.error(error)
-
-    return {
-      success: false,
-      message: 'Unexpected error, try again in a few minutes.',
-      errors: null,
-    }
   }
 
-  return {
-    success: true,
-    message: 'Successfully created the invite.',
-    errors: null,
-  }
+  return await executeServerActionWithHandling({
+    action: executeCreateInvite,
+    successMessage: 'Successfully created the invite.',
+  })
 }
 
 export async function transferOwnershipAction(transferToUserId: string) {
   const currentOrganization = getCurrentOrg()
 
-  try {
+  async function executeTransferOwnership() {
     await transferOwnershipRequest({
       organizationSlug: currentOrganization!,
       transferToUserId,
     })
 
     revalidateTag(`${currentOrganization}/members`)
-  } catch (error) {
-    if (error instanceof HTTPError) {
-      const { message } = await error.response.json()
-
-      return {
-        success: false,
-        message,
-        errors: null,
-      }
-    }
-
-    console.error(error)
-
-    return {
-      success: false,
-      message: 'Unexpected error, try again in a few minutes.',
-      errors: null,
-    }
   }
 
-  return {
-    success: true,
-    message: 'Successfully transferred the ownership.',
-    errors: null,
-  }
+  return await executeServerActionWithHandling({
+    action: executeTransferOwnership,
+    successMessage: 'Successfully transferred the ownership.',
+  })
 }

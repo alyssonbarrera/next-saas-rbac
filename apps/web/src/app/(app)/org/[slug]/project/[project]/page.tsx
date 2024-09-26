@@ -3,6 +3,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { TriangleAlert, UserCircle } from 'lucide-react'
 
 import { ability } from '@/auth'
+import { DangerZoneCard } from '@/components/danger-zone-card'
 import { DeleteProjectButton } from '@/components/delete-project-button'
 import { ProjectForm } from '@/components/forms/project-form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -27,7 +28,14 @@ type ProjectProps = {
 
 export default async function Project({ params }: ProjectProps) {
   const { slug: organizationSlug, project: projectSlug } = params
+
   const { project } = await getProjectRequest({
+    organizationSlug,
+    projectSlug,
+  })
+
+  console.log('project page', {
+    projectId: project.id,
     organizationSlug,
     projectSlug,
   })
@@ -96,22 +104,15 @@ export default async function Project({ params }: ProjectProps) {
       )}
 
       {canDeleteProject && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Delete project</CardTitle>
-            <CardDescription>
-              This action cannot be undone. This will permanently delete this
-              project.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <DeleteProjectButton
-              projectId={project.id}
-              organizationSlug={organizationSlug}
-            />
-          </CardContent>
-        </Card>
+        <DangerZoneCard
+          title="Delete project"
+          description="This action cannot be undone. This will permanently delete this project."
+        >
+          <DeleteProjectButton
+            projectId={project.id}
+            organizationSlug={organizationSlug}
+          />
+        </DangerZoneCard>
       )}
     </div>
   )

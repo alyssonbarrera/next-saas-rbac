@@ -3,6 +3,7 @@
 import { XCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
+import { deleteProjectAction } from '@/app/(app)/org/[slug]/project/[project]/actions'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +16,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { deleteProjectRequest } from '@/http/requests/projects/delete-project-request'
 import { queryClient } from '@/lib/react-query'
 
 type DeleteProjectButtonProps = {
@@ -30,10 +30,7 @@ export function DeleteProjectButton({
   const router = useRouter()
 
   async function handleDeleteProject() {
-    await deleteProjectRequest({
-      organizationSlug,
-      projectId,
-    })
+    await deleteProjectAction(projectId)
 
     router.push(`/org/${organizationSlug}`)
     queryClient.invalidateQueries({

@@ -1,10 +1,10 @@
 'use server'
 
-import { HTTPError } from 'ky'
 import { revalidateTag } from 'next/cache'
 
 import { getCurrentOrg } from '@/auth'
 import { createProjectRequest } from '@/http/requests/projects/create-project-request'
+import { executeServerActionWithHandling } from '@/utils/execute-server-action-with-handling'
 import { createProjectSchema } from '@/validations/schemas/create-project-schema'
 
 export async function createProjectAction(data: FormData) {
@@ -24,7 +24,7 @@ export async function createProjectAction(data: FormData) {
 
   const { name, description } = result.data
 
-  try {
+  async function executeCreateProject() {
     await createProjectRequest({
       name,
       description,
@@ -32,29 +32,10 @@ export async function createProjectAction(data: FormData) {
     })
 
     revalidateTag(`${currentOrganization}/projects`)
-  } catch (error) {
-    if (error instanceof HTTPError) {
-      const { message } = await error.response.json()
-
-      return {
-        success: false,
-        message,
-        errors: null,
-      }
-    }
-
-    console.error(error)
-
-    return {
-      success: false,
-      message: 'Unexpected error, try again in a few minutes.',
-      errors: null,
-    }
   }
 
-  return {
-    success: true,
-    message: 'Successfully saved the project.',
-    errors: null,
-  }
+  return await executeServerActionWithHandling({
+    action: executeCreateProject,
+    successMessage: 'Successfully saved the project.',
+  })
 }

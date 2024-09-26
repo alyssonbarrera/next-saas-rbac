@@ -2,8 +2,8 @@ import { api } from '../../api-client'
 import { Project } from './get-projects-request'
 
 type GetProjectRequestParams = {
-  organizationSlug: string
   projectSlug: string
+  organizationSlug: string
 }
 
 type GetProjectRequestResponse = {
@@ -11,8 +11,8 @@ type GetProjectRequestResponse = {
 }
 
 export async function getProjectRequest({
-  organizationSlug,
   projectSlug,
+  organizationSlug,
 }: GetProjectRequestParams): Promise<GetProjectRequestResponse> {
   const result = await api
     .get(`organizations/${organizationSlug}/projects/${projectSlug}`, {

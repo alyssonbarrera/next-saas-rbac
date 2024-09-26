@@ -23,6 +23,7 @@ export async function getInvitesRequest(
     .get(`organizations/${organization}/invites`, {
       next: {
         tags: [`${organization}/invites`],
+        revalidate: 60,
       },
     })
     .json<GetInvitesRequestResponse>()

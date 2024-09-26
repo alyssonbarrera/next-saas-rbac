@@ -9,11 +9,9 @@ type PasswordRecoverRequestResponse = void
 export async function passwordRecoverRequest({
   email,
 }: PasswordRecoverRequestParams): Promise<PasswordRecoverRequestResponse> {
-  await api
-    .post('password/recover', {
-      json: {
-        email,
-      },
-    })
-    .json<PasswordRecoverRequestResponse>()
+  await api.post('password/recover', {
+    json: {
+      email,
+    },
+  })
 }

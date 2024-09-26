@@ -1,10 +1,10 @@
 'use server'
 
-import { HTTPError } from 'ky'
 import { cookies } from 'next/headers'
 
 import { signInWithEmailAndPasswordRequest } from '@/http/requests/accounts/sign-in-with-email-and-password-request'
 import { acceptInviteRequest } from '@/http/requests/invites/accept-invite-request'
+import { executeServerActionWithHandling } from '@/utils/execute-server-action-with-handling'
 import { signInSchema } from '@/validations/schemas/sign-in-schema'
 
 export async function signInWithEmailAndPassword(data: FormData) {
@@ -22,7 +22,7 @@ export async function signInWithEmailAndPassword(data: FormData) {
 
   const { email, password } = result.data
 
-  try {
+  async function executeSignIn() {
     const { token } = await signInWithEmailAndPasswordRequest({
       email,
       password,
@@ -41,29 +41,9 @@ export async function signInWithEmailAndPassword(data: FormData) {
         cookies().delete('inviteId')
       } catch {}
     }
-  } catch (error) {
-    if (error instanceof HTTPError) {
-      const { message } = await error.response.json()
-
-      return {
-        success: false,
-        message,
-        errors: null,
-      }
-    }
-
-    console.error(error)
-
-    return {
-      success: false,
-      message: 'Unexpected error, try again in a few minutes.',
-      errors: null,
-    }
   }
 
-  return {
-    success: true,
-    message: null,
-    errors: null,
-  }
+  return await executeServerActionWithHandling({
+    action: executeSignIn,
+  })
 }

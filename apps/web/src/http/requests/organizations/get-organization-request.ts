@@ -18,7 +18,12 @@ export async function getOrganizationRequest(
   organizationSlug: string,
 ): Promise<GetOrganizationRequestResponse> {
   const result = await api
-    .get(`organizations/${organizationSlug}`)
+    .get(`organizations/${organizationSlug}`, {
+      next: {
+        tags: [`organizations/${organizationSlug}`],
+        revalidate: 60,
+      },
+    })
     .json<GetOrganizationRequestResponse>()
 
   return result

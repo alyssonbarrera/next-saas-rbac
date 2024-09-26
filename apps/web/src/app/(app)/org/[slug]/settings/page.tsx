@@ -1,5 +1,6 @@
 import { ability, getCurrentOrg } from '@/auth'
 import { Billing } from '@/components/billing'
+import { DangerZoneCard } from '@/components/danger-zone-card'
 import { OrganizationForm } from '@/components/forms/organization-form'
 import { ShutdownOrganizationButton } from '@/components/shutdown-organization-button'
 import {
@@ -63,19 +64,12 @@ export default async function Settings() {
         )}
 
         {canShutdownOrganization && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Shutdown organization</CardTitle>
-              <CardDescription>
-                This will delete all organization data including all projects.
-                You cannot undo this action.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent>
-              <ShutdownOrganizationButton />
-            </CardContent>
-          </Card>
+          <DangerZoneCard
+            title="Shutdown organization"
+            description="This will delete all organization data including all projects. You cannot undo this action."
+          >
+            <ShutdownOrganizationButton />
+          </DangerZoneCard>
         )}
       </div>
     </div>

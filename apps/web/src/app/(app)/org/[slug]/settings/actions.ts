@@ -1,10 +1,10 @@
 'use server'
 
-import { HTTPError } from 'ky'
 import { revalidateTag } from 'next/cache'
 
 import { getCurrentOrg } from '@/auth'
 import { updateOrganizationRequest } from '@/http/requests/organizations/update-organization-request'
+import { executeServerActionWithHandling } from '@/utils/execute-server-action-with-handling'
 import { organizationSchema } from '@/validations/schemas/organization-schema'
 
 export async function updateOrganizationAction(data: FormData) {
@@ -22,7 +22,7 @@ export async function updateOrganizationAction(data: FormData) {
 
   const { name, domain, shouldAttachUsersByDomain } = result.data
 
-  try {
+  async function executeUpdateOrganization() {
     await updateOrganizationRequest({
       name,
       domain,
@@ -31,29 +31,10 @@ export async function updateOrganizationAction(data: FormData) {
     })
 
     revalidateTag('organizations')
-  } catch (error) {
-    if (error instanceof HTTPError) {
-      const { message } = await error.response.json()
-
-      return {
-        success: false,
-        message,
-        errors: null,
-      }
-    }
-
-    console.error(error)
-
-    return {
-      success: false,
-      message: 'Unexpected error, try again in a few minutes.',
-      errors: null,
-    }
   }
 
-  return {
-    success: true,
-    message: 'Successfully saved the organization.',
-    errors: null,
-  }
+  return await executeServerActionWithHandling({
+    action: executeUpdateOrganization,
+    successMessage: 'Successfully saved the organization.',
+  })
 }
