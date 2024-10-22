@@ -15,7 +15,7 @@ import { UpdateMemberRoleSelect } from '../update-member-role-select'
 
 export async function MemberList() {
   const permissions = await ability()
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   const [{ membership }, { members }, { organization }] = await Promise.all([
     getMembershipRequest(currentOrganization!),

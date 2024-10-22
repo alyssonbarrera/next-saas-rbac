@@ -17,7 +17,7 @@ import {
 } from '../ui/dropdown-menu'
 
 export async function OrganizationSwitcher() {
-  const organizationFromCookies = getCurrentOrg()
+  const organizationFromCookies = await getCurrentOrg()
   const { organizations } = await getOrganizationsRequest()
 
   const currentOrganization = organizations.find(

@@ -29,12 +29,14 @@ export async function signUpWithEmailAndPassword(data: FormData) {
       password,
     })
 
-    const inviteId = cookies().get('inviteId')?.value
+    const cookieStore = await cookies()
+
+    const inviteId = cookieStore.get('inviteId')?.value
 
     if (inviteId) {
       try {
         await acceptInviteRequest({ inviteId })
-        cookies().delete('inviteId')
+        cookieStore.delete('inviteId')
       } catch {}
     }
   }

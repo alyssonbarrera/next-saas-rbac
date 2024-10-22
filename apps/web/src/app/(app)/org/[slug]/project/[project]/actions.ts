@@ -10,7 +10,7 @@ import { executeServerActionWithHandling } from '@/utils/execute-server-action-w
 import { createProjectSchema } from '@/validations/schemas/create-project-schema'
 
 export async function updateProjectAction(data: FormData) {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   const result = createProjectSchema.safeParse(Object.fromEntries(data))
 
@@ -24,7 +24,8 @@ export async function updateProjectAction(data: FormData) {
     }
   }
 
-  const projectSlug = cookies().get('project')?.value
+  const cookieStore = await cookies()
+  const projectSlug = cookieStore.get('project')?.value
 
   const { name, description } = result.data
 
@@ -46,7 +47,7 @@ export async function updateProjectAction(data: FormData) {
 }
 
 export async function deleteProjectAction(projectId: string) {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   await deleteProjectRequest({
     projectId,

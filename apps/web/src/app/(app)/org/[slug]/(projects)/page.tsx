@@ -8,7 +8,7 @@ import { ProjectList } from './project-list'
 
 export default async function Projects() {
   const permissions = await ability()
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   return (
     <div className="space-y-4">

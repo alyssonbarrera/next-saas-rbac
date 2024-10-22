@@ -8,7 +8,7 @@ import { executeServerActionWithHandling } from '@/utils/execute-server-action-w
 import { createProjectSchema } from '@/validations/schemas/create-project-schema'
 
 export async function createProjectAction(data: FormData) {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   const result = createProjectSchema.safeParse(Object.fromEntries(data))
 

@@ -23,11 +23,13 @@ export async function updateOrganizationAction(data: FormData) {
   const { name, domain, shouldAttachUsersByDomain } = result.data
 
   async function executeUpdateOrganization() {
+    const currentOrganization = await getCurrentOrg()
+
     await updateOrganizationRequest({
       name,
       domain,
       shouldAttachUsersByDomain,
-      organizationSlug: getCurrentOrg()!,
+      organizationSlug: currentOrganization!,
     })
 
     revalidateTag('organizations')

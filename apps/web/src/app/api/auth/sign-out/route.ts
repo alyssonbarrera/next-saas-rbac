@@ -6,7 +6,8 @@ export async function GET(request: NextRequest) {
 
   redirectURL.pathname = '/auth/sign-in'
 
-  cookies().delete('token')
+  const cookieStore = await cookies()
+  cookieStore.delete('token')
 
   return NextResponse.redirect(redirectURL)
 }

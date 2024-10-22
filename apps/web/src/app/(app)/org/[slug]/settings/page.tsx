@@ -13,7 +13,7 @@ import {
 import { getOrganizationRequest } from '@/http/requests/organizations/get-organization-request'
 
 export default async function Settings() {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
   const permissions = await ability()
 
   const canUpdateOrganization = permissions?.can('update', 'Organization')

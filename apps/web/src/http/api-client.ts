@@ -1,18 +1,21 @@
 import { env } from '@saas/env'
-import { getCookie } from 'cookies-next'
-import type { CookiesFn } from 'cookies-next/lib/types'
 import ky from 'ky'
 
 async function setTokenFromCookies(request: Request) {
-  let cookieStore: CookiesFn | undefined
+  let token: string | undefined
 
   if (typeof window === 'undefined') {
     const { cookies: serverCookies } = await import('next/headers')
 
-    cookieStore = serverCookies
+    const cookieStore = await serverCookies()
+    token = cookieStore.get('token')?.value
   }
 
-  const token = getCookie('token', { cookies: cookieStore })
+  if (typeof window !== 'undefined') {
+    const { default: clientCookies } = await import('js-cookie')
+
+    token = clientCookies.get('token')
+  }
 
   if (token) {
     request.headers.set('Authorization', `Bearer ${token}`)

@@ -13,7 +13,7 @@ import { executeServerActionWithHandling } from '@/utils/execute-server-action-w
 import { createInviteSchema } from '@/validations/schemas/create-invite-schema'
 
 export async function removeMemberAction(memberId: string) {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   await removeMemberRequest({
     memberId,
@@ -24,7 +24,7 @@ export async function removeMemberAction(memberId: string) {
 }
 
 export async function updateMemberAction(memberId: string, role: Role) {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   await updateMemberRequest({
     role,
@@ -36,7 +36,7 @@ export async function updateMemberAction(memberId: string, role: Role) {
 }
 
 export async function revokeInviteAction(inviteId: string) {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   await revokeInviteRequest({
     inviteId,
@@ -47,7 +47,7 @@ export async function revokeInviteAction(inviteId: string) {
 }
 
 export async function createInviteAction(data: FormData) {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   const result = createInviteSchema.safeParse(Object.fromEntries(data))
 
@@ -80,7 +80,7 @@ export async function createInviteAction(data: FormData) {
 }
 
 export async function transferOwnershipAction(transferToUserId: string) {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   async function executeTransferOwnership() {
     await transferOwnershipRequest({

@@ -20,22 +20,16 @@ import { getProjectRequest } from '@/http/requests/projects/get-project-request'
 dayjs.extend(relativeTime)
 
 type ProjectProps = {
-  params: {
+  params: Promise<{
     slug: string
     project: string
-  }
+  }>
 }
 
 export default async function Project({ params }: ProjectProps) {
-  const { slug: organizationSlug, project: projectSlug } = params
+  const { slug: organizationSlug, project: projectSlug } = await params
 
   const { project } = await getProjectRequest({
-    organizationSlug,
-    projectSlug,
-  })
-
-  console.log('project page', {
-    projectId: project.id,
     organizationSlug,
     projectSlug,
   })

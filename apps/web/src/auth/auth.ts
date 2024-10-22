@@ -6,7 +6,9 @@ import { getProfileRequest } from '@/http/requests/accounts/get-profile-request'
 import { getMembershipRequest } from '@/http/requests/organizations/get-membership-request'
 
 export async function auth() {
-  const token = cookies().get('token')?.value
+  const cookieStore = await cookies()
+
+  const token = cookieStore.get('token')?.value
 
   if (!token) {
     redirect('/auth/sign-in')
@@ -21,16 +23,18 @@ export async function auth() {
   redirect('/api/auth/sign-out')
 }
 
-export function isAuthenticated() {
-  return !!cookies().get('token')?.value
+export async function isAuthenticated() {
+  const cookieStore = await cookies()
+  return !!cookieStore.get('token')?.value
 }
 
-export function getCurrentOrg() {
-  return cookies().get('org')?.value ?? null
+export async function getCurrentOrg() {
+  const cookieStore = await cookies()
+  return cookieStore.get('org')?.value ?? null
 }
 
 export async function getCurrentMembership() {
-  const organization = getCurrentOrg()
+  const organization = await getCurrentOrg()
 
   if (!organization) {
     return null

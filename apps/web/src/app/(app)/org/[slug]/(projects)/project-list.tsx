@@ -18,7 +18,7 @@ import { getProjectsRequest } from '@/http/requests/projects/get-projects-reques
 dayjs.extend(relativeTime)
 
 export async function ProjectList() {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
   const { projects } = await getProjectsRequest(currentOrganization!)
 
   return (

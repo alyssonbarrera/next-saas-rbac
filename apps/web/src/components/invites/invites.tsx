@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableRow } from '../ui/table'
 
 export async function Invites() {
   const permissions = await ability()
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
 
   const { invites } = await getInvitesRequest(currentOrganization!)
 

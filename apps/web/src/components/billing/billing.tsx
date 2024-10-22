@@ -22,7 +22,7 @@ import {
 } from '../ui/table'
 
 export async function Billing() {
-  const currentOrganization = getCurrentOrg()
+  const currentOrganization = await getCurrentOrg()
   const { billing } = await getBillingRequest(currentOrganization!)
 
   function formatCurrency(value: number) {

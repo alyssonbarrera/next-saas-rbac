@@ -21,7 +21,7 @@ export function ShutdownOrganizationButton() {
   async function shutdownOrganizationAction() {
     'use server'
 
-    const currentOrganization = getCurrentOrg()
+    const currentOrganization = await getCurrentOrg()
 
     await shutdownOrganizationRequest(currentOrganization!)
     revalidateTag('organizations')
